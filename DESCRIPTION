@@ -1,0 +1,13 @@
+Package: gdiff
+Type: Package
+Title: Graphical Difference Testing
+Version: 0.1.0
+Author: Paul Murrell
+Maintainer: Paul Murrell <paul@stat.auckland.ac.nz>
+Description: Functions for performing graphical difference testing.     
+             Differences are generated between raster images.
+             Differences can also be generated for text-based graphical
+             formats, like SVG.  
+Imports: grDevices, magick
+URL: https://github.com/pmur002/
+License: GPL (>= 2)

@@ -1,0 +1,29 @@
+
+createDir <- function(dir, clean=TRUE) {
+    if (dir.exists(dir)) {
+        if (clean) {
+            unlink(dir, recursive=TRUE)
+            dir.create(dir)
+        }
+    } else {
+        dir.create(dir)
+    }
+}
+
+underline <- function(char="-") {
+    paste(rep(char, options("width")), collapse="")
+}
+
+## Does 'x' contain components named "control" and "test"
+checkList <- function(x, compare=FALSE) {
+    requiredNames <- c("control", "test")
+    if (compare) {
+        requiredNames <- c(requiredNames, "compare")
+    }
+    names <- names(x)
+    if (is.null(names) ||
+        !all(requiredNames %in% names))
+        stop(paste0("List requires components named: ",
+                    paste0(required, collapse=", ")))
+}
+

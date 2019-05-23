@@ -1,0 +1,14 @@
+
+importFrom("grDevices",
+           "dev.off")
+
+export("gdiff",
+
+       "pngDevice",
+       "pdfDevice",
+       "cairo_pdfDevice")
+
+S3method("gdiff", "function")
+S3method("gdiff", "list")
+
+S3method("print", "gcomparison")
