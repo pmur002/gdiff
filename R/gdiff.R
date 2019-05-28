@@ -11,9 +11,7 @@ gdiffFunction <- function(code,
                           compareDir="Compare",
                           clean=TRUE,
                           device=pngDevice(),
-                          Rcmd=NULL,
-                          libPaths=NULL,
-                          host=NULL) {
+                          session=currentSession()) {
     ## Argument checks
     if (controlDir == testDir ||
         controlDir == compareDir ||
@@ -21,30 +19,31 @@ gdiffFunction <- function(code,
         stop("Control, test, and compare directories MUST be distinct")
     }
     if (is.list(code)) {
-        checkList(code)
+        checkList(code, class="function")
     } else {
         code <- list(control=code, test=code)
     }
     if (is.list(clean)) {
-        checkList(clean, compare=TRUE)
+        checkList(clean, compare=TRUE, class="logical")
     } else {
         clean <- list(control=clean, test=clean, compare=clean)
     }
     device <- checkDevice(device)
+    if (inherits(session, "gdiff.session")) {
+        session <- list(control=session, test=session)
+    } else {
+        checkList(session, class="gdiff.session")
+    }
     ## Generate control output
-    createDir(controlDir, clean$control)
-    for (d in device$control) {
-        d$open(file.path(controlDir, paste0(name, "-CONTROL")))
-        code$control()
-        d$close()
-    }
+    generateOutput(session$control, code$control,
+                   controlDir, name, "-CONTROL",
+                   device$control,
+                   clean$control)
     ## Generate test output
-    createDir(testDir, clean$test)
-    for (d in device$test) {
-        d$open(file.path(testDir, paste0(name, "-TEST")))
-        code$test()
-        d$close()
-    }
+    generateOutput(session$test, code$test,
+                   testDir, name, "-TEST",
+                   device$test,
+                   clean$test)
     ## Generate comparisons
     createDir(compareDir, clean$compare)
     performComparison(controlDir, testDir, compareDir)
@@ -55,6 +54,6 @@ gdiff.function <- function(code, name=deparse(substitute(code)), ...) {
 }
 
 gdiff.list <- function(code, name, ...) {
-    checkList(code)
+    checkList(code, class="function")
     gdiffFunction(code, name, ...)
 }

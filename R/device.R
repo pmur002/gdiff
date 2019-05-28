@@ -1,7 +1,7 @@
 
 device <- function(name, suffix=name, open, close=dev.off) {
     d <- list(name=name, suffix=suffix, open=open, close=close)
-    class(d) <- "gdevice"
+    class(d) <- "gdiff.device"
     d
 }
 
@@ -32,17 +32,17 @@ cairo_pdfDevice <- function(...) {
 checkDevice <- function(device) {
     ## 'device' can be single device, or list of devices,
     ## or list with 'control' and 'test' (which can be single device or list)
-    if (inherits(device, "gdevice")) {
+    if (inherits(device, "gdiff.device")) {
         device <- list(control=list(device), test=list(device))
     } else {
         if (is.null(names(device))) {
             device <- list(control=device, test=device)
         } else {
             checkList(device)
-            if (inherits(device$control, "gdevice")) {
+            if (inherits(device$control, "gdiff.device")) {
                 device$control <- list(device$control)
             } 
-            if (inherits(device$test, "gdevice")) {
+            if (inherits(device$test, "gdiff.device")) {
                 device$test <- list(device$test)
             } 
         }

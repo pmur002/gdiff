@@ -2,13 +2,31 @@
 importFrom("grDevices",
            "dev.off")
 
+importFrom("parallel",
+           "clusterCall",
+           "makePSOCKcluster",
+           "stopCluster")
+
+importFrom("ssh",
+           "ssh_download",
+           "ssh_connect",
+           "ssh_disconnect")
+           
 export("gdiff",
 
        "pngDevice",
        "pdfDevice",
-       "cairo_pdfDevice")
+       "cairo_pdfDevice",
+
+       "currentSession",
+       "localSession",
+       "remoteSession")
 
 S3method("gdiff", "function")
 S3method("gdiff", "list")
+
+S3method("generateOutput", "currentsession")
+S3method("generateOutput", "localsession")
+S3method("generateOutput", "remotesession")
 
 S3method("print", "gcomparison")

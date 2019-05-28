@@ -22,6 +22,8 @@ performComparison <- function(controlDir, testDir, compareDir) {
                            gsub("[.].+$", ".png",
                                 gsub("-CONTROL", "-DIFF",
                                      basename(compareFiles$control))))
+    ## TODO
+    ## parallelise this step
     diffs <- mapply(compare,
                     compareFiles$control, compareFiles$test, diffFiles,
                     SIMPLIFY=TRUE)
@@ -45,8 +47,8 @@ print.gcomparison <- function(x, ..., detail=TRUE) {
         if (detail) {
             result <- c(result, "", header, underline())
             result <-c(result,
-                       paste0(x$controlFiles[same],
-                              " matches ", x$testFiles[same]))
+                       paste0(x$controlFiles[x$controlInTest][same],
+                              " matches ", x$testFiles[x$testInControl][same]))
         } else {
             result <- c(result, header)
         }
@@ -57,19 +59,20 @@ print.gcomparison <- function(x, ..., detail=TRUE) {
         if (detail) {
             result <- c(result, "", header, underline())
             result <- c(result,
-                        paste0(x$controlFiles[different],
-                               " differs from ", x$testFiles[different],
+                        paste0(x$controlFiles[x$controlInTest][different],
+                               " differs from ",
+                               x$testFiles[x$testInControl][different],
                                " (", x$diffs[different], ")"))
         } else {
             result <- c(result, header)
         }
     }
-    if (any(!x$controlInTest | !x$testInControl) ) {
+    if (any(!x$controlInTest) || any(!x$testInControl)) {
         header <- paste0("Mismatched files [",
                          sum(!x$controlInTest, !x$testInControl),
                          "]")
         if (detail) {
-            result <- c(result, "", header, underline)
+            result <- c(result, "", header, underline())
         } else {
             result <- c(result, header)
         }
