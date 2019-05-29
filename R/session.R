@@ -103,20 +103,22 @@ generateOutput.dockersession <- function(session, code, dir,
                                                         ":/work"),
                                          working_dir="/work")
     container$start()
-    ## Run R to generate output
-    ## Output from execution should be directory where output was generated
+    ## Run R in container to generate output
+    paths <- session$libPaths
     f <- function() {
         if (!require("gdiff")) {
             install.packages("gdiff")
         }
-        if (!is.null(session$libPaths)) {
+        if (!is.null(paths)) {
             oldPaths <- .libPaths()
-            .libPaths(c(session$libPaths, oldPaths))
+            .libPaths(c(paths, oldPaths))
         }
-        gdiffOutput(code, ".", name, suffix, device, clean=FALSE)
+        gdiff::gdiffOutput(code, ".", name, suffix, device, clean=FALSE)
     }
+    environment(f) <- globalenv()
     funFile <- file.path(dir, "gdiff.rda")
-    save("f", file=funFile)
+    save("f", "paths", "code", "name", "suffix", "device", "clean",
+         file=funFile)
     cmd <- c(session$Rpath, "-e", "load(\"gdiff.rda\"); f()")
     container$exec(cmd)
     container$stop()

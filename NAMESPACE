@@ -24,7 +24,9 @@ export("gdiff",
        "currentSession",
        "dockerSession",
        "localSession",
-       "remoteSession")
+       "remoteSession",
+
+       "gdiffOutput")
 
 S3method("gdiff", "function")
 S3method("gdiff", "list")
