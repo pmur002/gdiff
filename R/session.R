@@ -60,6 +60,9 @@ generateOutput.remotesession <- function(session, code, dir,
                   c(list(session$name, rscript=session$Rpath),
                     session$clusterArgs))
     f <- function() {
+        if (!require("gdiff")) {
+            install.packages("gdiff")
+        }
         outputDir <- tempfile("gdiffOutput")
         dir.create(outputDir)
         if (!is.null(session$libPaths)) {
