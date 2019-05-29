@@ -19,9 +19,9 @@ performComparison <- function(controlDir, testDir, compareDir) {
     compareFiles <- list(control=sort(controlFiles[controlInTest]),
                          test=sort(testFiles[testInControl]))
     diffFiles <- file.path(compareDir,
-                           gsub("[.].+$", ".png",
-                                gsub("-CONTROL", "-DIFF",
-                                     basename(compareFiles$control))))
+                           paste0(gsub("-CONTROL", "-DIFF",
+                                       basename(compareFiles$control)),
+                                  ".png"))
     ## TODO
     ## parallelise this step
     diffs <- mapply(compare,

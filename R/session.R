@@ -84,7 +84,43 @@ generateOutput.remotesession <- function(session, code, dir,
 }
 
 ## Running Docker container
-dockerSession <- function(libPaths=NULL, Rpath=NULL, ID=NULL, ...) {
-    session("dockersession", libPaths=libPaths, Rpath=Rpath, ID=ID)
+dockerSession <- function(image, libPaths=NULL, Rpath="Rscript", ...) {
+    session("dockersession", libPaths=libPaths, Rpath=Rpath, image=image)
 }
 
+generateOutput.dockersession <- function(session, code, dir,
+                                         name, suffix, device, clean) {
+    ## Create/clean output directory first
+    ## (Docker container will just generate output in there)
+    createDir(dir, clean)
+    docker <- docker_client()
+    ## Create container 
+    container <- docker$container$create(session$image,
+                                         ## Keep container open
+                                         "/bin/bash", tty=TRUE,
+                                         ## Mount local output directory
+                                         volumes=paste0(normalizePath(dir),
+                                                        ":/work"),
+                                         working_dir="/work")
+    container$start()
+    ## Run R to generate output
+    ## Output from execution should be directory where output was generated
+    f <- function() {
+        if (!require("gdiff")) {
+            install.packages("gdiff")
+        }
+        if (!is.null(session$libPaths)) {
+            oldPaths <- .libPaths()
+            .libPaths(c(session$libPaths, oldPaths))
+        }
+        gdiffOutput(code, ".", name, suffix, device, clean=FALSE)
+    }
+    funFile <- file.path(dir, "gdiff.rda")
+    save("f", file=funFile)
+    cmd <- c(session$Rpath, "-e", "load(\"gdiff.rda\"); f()")
+    container$exec(cmd)
+    container$stop()
+    container$remove()
+    ## Clean up
+    unlink(funFile)
+}

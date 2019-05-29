@@ -8,17 +8,21 @@ importFrom("parallel",
            "stopCluster")
 
 importFrom("ssh",
-           "ssh_download",
+           "scp_download",
            "ssh_connect",
            "ssh_disconnect")
+
+importFrom("stevedore",
+           "docker_client")
            
 export("gdiff",
 
        "pngDevice",
        "pdfDevice",
-       "cairo_pdfDevice",
+       "cairo_pdf_device",
 
        "currentSession",
+       "dockerSession",
        "localSession",
        "remoteSession")
 

@@ -20,11 +20,11 @@ pdfDevice <- function(...) {
            })
 }
 
-cairo_pdfDevice <- function(...) {
+cairo_pdf_device <- function(...) {
     device("cairo_pdf",
            "pdf",
            open=function(name) {
-               cairo_pdf(paste0(name, "-%03d.pdf"),
+               cairo_pdf(paste0(name, "-%03d.cairo.pdf"),
                          onefile=FALSE, ...)
            })
 }
