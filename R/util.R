@@ -15,7 +15,7 @@ underline <- function(char="-") {
 }
 
 ## Does 'x' contain components named "control" and "test"
-checkList <- function(x, compare=FALSE, class=NULL) {
+checkList <- function(x, compare=FALSE, class=NULL, allowNull=FALSE) {
     requiredNames <- c("control", "test")
     if (compare) {
         requiredNames <- c(requiredNames, "compare")
@@ -24,10 +24,12 @@ checkList <- function(x, compare=FALSE, class=NULL) {
     if (is.null(names) ||
         !all(requiredNames %in% names))
         stop(paste0("List requires components named: ",
-                    paste0(required, collapse=", ")))
+                    paste0(requiredNames, collapse=", ")))
     if (!is.null(class)) 
-        if (!(inherits(x$control, class) &&
-              inherits(x$test, class)))
+        if (!((inherits(x$control, class) ||
+               (allowNull && is.null(x$control))) &&
+              (inherits(x$test, class) ||
+               (allowNull && is.null(x$test)))))
             stop(paste0("List components must have class '", class, "'"))
 }
 

@@ -28,14 +28,28 @@ generateOutput.currentsession <- function(session, code, dir,
 
 ## R session on local machine
 localSession <- function(libPaths=NULL,
-                         Rpath=file.path(R.home("bin"), "Rscript")) {
-    session("localsession", libPaths=libPaths, Rpath=Rpath)
+                         Rpath=file.path(R.home("bin"), "Rscript"),
+                         ...) {
+    session("localsession", libPaths=libPaths, Rpath=Rpath,
+            clusterArgs=list(...))
 }
 
 generateOutput.localsession <- function(session, code, dir,
                                         name, suffix, device, clean) {
-    cl <- makePSOCKcluster(1, rscript=session$Rpath)
+    ## Avoid worker session getting library paths from master session
+    libVars <- Sys.getenv(c("R_LIBS", "R_LIBS_SITE", "R_LIBS_USER"))
+    Sys.setenv(R_LIBS="", R_LIBS_SITE="", R_LIBS_USER="")
+    on.exit(do.call(Sys.setenv, as.list(libVars)))
+    
+    cl <- do.call(makePSOCKcluster,
+                  c(list(1, rscript=session$Rpath),
+                    session$clusterArgs))
+    on.exit(stopCluster(cl))
+            
     f <- function() {
+        if (!require("gdiff")) {
+            install.packages("gdiff")
+        }
         if (!is.null(session$libPaths)) {
             oldPaths <- .libPaths()
             .libPaths(c(session$libPaths, oldPaths))
@@ -43,7 +57,6 @@ generateOutput.localsession <- function(session, code, dir,
         gdiffOutput(code, dir, name, suffix, device, clean)
     }
     clusterCall(cl, f)
-    stopCluster(cl)
 }
 
 ## Networked machine (possibly virtual)

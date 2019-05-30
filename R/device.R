@@ -12,6 +12,14 @@ pngDevice <- function(...) {
            })
 }
 
+postscriptDevice <- function(...) {
+    device("postscript",
+           open=function(name) {
+               postscript(paste0(name, "-%03d.ps"),
+                          onefile=FALSE, ...)
+           })
+}
+
 pdfDevice <- function(...) {
     device("pdf",
            open=function(name) {
@@ -20,11 +28,10 @@ pdfDevice <- function(...) {
            })
 }
 
-cairo_pdf_device <- function(...) {
+cairo_pdf_device <- function(suffix=".cairo.pdf", ...) {
     device("cairo_pdf",
-           "pdf",
            open=function(name) {
-               cairo_pdf(paste0(name, "-%03d.cairo.pdf"),
+               cairo_pdf(paste0(name, "-%03d", suffix),
                          onefile=FALSE, ...)
            })
 }

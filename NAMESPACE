@@ -17,9 +17,10 @@ importFrom("stevedore",
            
 export("gdiff",
 
+       "cairo_pdf_device",
        "pngDevice",
        "pdfDevice",
-       "cairo_pdf_device",
+       "postscriptDevice",
 
        "currentSession",
        "dockerSession",

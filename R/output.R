@@ -8,10 +8,12 @@ generateOutput <- function(session, code, dir, name, suffix, device, clean) {
 ## Useful function for generateOutput() methods
 gdiffOutput <- function(code, dir, name, suffix, device, clean) {
     createDir(dir, clean)
-    for (d in device) {
-        d$open(file.path(dir, paste0(name, suffix)))
-        code()
-        d$close()
+    if (!is.null(code)) {
+        for (d in device) {
+            d$open(file.path(dir, paste0(name, suffix)))
+            code()
+            d$close()
+        }
     }
 }
 

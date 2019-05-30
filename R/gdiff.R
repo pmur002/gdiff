@@ -19,7 +19,7 @@ gdiffFunction <- function(code,
         stop("Control, test, and compare directories MUST be distinct")
     }
     if (is.list(code)) {
-        checkList(code, class="function")
+        checkList(code, class="function", allowNull=TRUE)
     } else {
         code <- list(control=code, test=code)
     }
@@ -54,6 +54,6 @@ gdiff.function <- function(code, name=deparse(substitute(code)), ...) {
 }
 
 gdiff.list <- function(code, name, ...) {
-    checkList(code, class="function")
+    checkList(code, class="function", allowNull=TRUE)
     gdiffFunction(code, name, ...)
 }
