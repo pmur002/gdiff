@@ -36,12 +36,12 @@ gdiffFunction <- function(code,
     }
     ## Generate control output
     generateOutput(session$control, code$control,
-                   controlDir, name, "-CONTROL",
+                   controlDir, name, 
                    device$control,
                    clean$control)
     ## Generate test output
     generateOutput(session$test, code$test,
-                   testDir, name, "-TEST",
+                   testDir, name, 
                    device$test,
                    clean$test)
     ## Generate comparisons

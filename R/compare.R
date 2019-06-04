@@ -11,17 +11,15 @@ compare <- function(controlFile, testFile, diffFile) {
 
 performComparison <- function(controlDir, testDir, compareDir) {
     controlFiles <- list.files(controlDir, full.names=TRUE)
-    controlBland <- gsub("-CONTROL", "", basename(controlFiles))
+    controlBland <- basename(controlFiles)
     testFiles <- list.files(testDir, full.names=TRUE)
-    testBland <- gsub("-TEST", "", basename(testFiles))
+    testBland <- basename(testFiles)
     controlInTest <- controlBland %in% testBland
     testInControl <- testBland %in% controlBland
     compareFiles <- list(control=sort(controlFiles[controlInTest]),
                          test=sort(testFiles[testInControl]))
     diffFiles <- file.path(compareDir,
-                           paste0(gsub("-CONTROL", "-DIFF",
-                                       basename(compareFiles$control)),
-                                  ".png"))
+                           paste0(basename(compareFiles$control), ".png"))
     ## TODO
     ## parallelise this step
     diffs <- mapply(compare,
