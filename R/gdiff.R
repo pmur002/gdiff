@@ -57,3 +57,26 @@ gdiff.list <- function(code, name, ...) {
     checkList(code, class="function", allowNull=TRUE)
     gdiffFunction(code, name, ...)
 }
+
+gdiffExamples <- function(fun, ...) {
+    UseMethod("gdiffExamples")
+}
+
+gdiffExamples.character <- function(fun, name=fun, ...) {
+    f <- function() {
+        example(fun, character.only=TRUE, setRNG=TRUE, echo=FALSE, ask=FALSE)
+    }
+    gdiff(f, name=name, ...)
+}
+
+gdiffExamples.function <- function(fun, name=NULL, ...) {
+    fun <- deparse(substitute(fun))
+    if (is.null(name)) {
+        name <- fun
+    }
+    f <- function() {
+        example(fun, character.only=TRUE, setRNG=TRUE, echo=FALSE, ask=FALSE)
+    }
+    gdiff(f, name=name, ...)
+}
+

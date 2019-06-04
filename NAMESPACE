@@ -16,6 +16,7 @@ importFrom("stevedore",
            "docker_client")
            
 export("gdiff",
+       "gdiffExamples",
 
        "cairo_pdf_device",
        "pngDevice",
@@ -31,6 +32,8 @@ export("gdiff",
 
 S3method("gdiff", "function")
 S3method("gdiff", "list")
+S3method("gdiffExamples", "character")
+S3method("gdiffExamples", "function")
 
 S3method("generateOutput", "currentsession")
 S3method("generateOutput", "localsession")
