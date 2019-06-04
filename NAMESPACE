@@ -35,5 +35,9 @@ S3method("gdiff", "list")
 S3method("generateOutput", "currentsession")
 S3method("generateOutput", "localsession")
 S3method("generateOutput", "remotesession")
+S3method("generateOutput", "clustersession")
+
+S3method("remoteSession", "character")
+S3method("remoteSession", "cluster")
 
 S3method("print", "gcomparison")

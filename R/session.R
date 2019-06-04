@@ -60,8 +60,13 @@ generateOutput.localsession <- function(session, code, dir,
 }
 
 ## Networked machine (possibly virtual)
-remoteSession <- function(remote, libPaths=NULL, Rpath="Rscript", ...) {
-    session("remotesession", libPaths=libPaths, Rpath=Rpath, name=remote,
+remoteSession <- function(remote, ...) {
+    UseMethod("remoteSession")
+}
+
+remoteSession.character <- function(remote, libPaths=NULL, Rpath="Rscript",
+                                    ...) {
+    session("remotesession", libPaths=libPaths, Rpath=Rpath, remote=remote,
             clusterArgs=list(...))
 }
 
@@ -97,6 +102,38 @@ generateOutput.remotesession <- function(session, code, dir,
     scp_download(con, file.path(outputDir, "*"), dir, verbose=FALSE)
     ssh_disconnect(con)
     stopCluster(cl)    
+}
+
+remoteSession.cluster <- function(remote, libPaths=NULL, user=NULL, ...) {
+    session("clustersession", libPaths=libPaths, user=user, remote=remote)
+}
+
+generateOutput.clustersession <- function(session, code, dir,
+                                          name, suffix, device, clean) {
+    f <- function() {
+        if (!require("gdiff")) {
+            install.packages("gdiff")
+        }
+        outputDir <- tempfile("gdiffOutput")
+        dir.create(outputDir)
+        if (!is.null(session$libPaths)) {
+            oldPaths <- .libPaths()
+            .libPaths(c(session$libPaths, oldPaths))
+        }
+        gdiffOutput(code, outputDir, name, suffix, device, clean)
+        outputDir
+    }
+    outputDir <- clusterCall(cl, f)[[1]]
+    ## Harvest output from remote session
+    if (is.null(session$user)) {
+        host <- session$remote[[1]]$host
+    } else {
+        host <- paste0(session$user, "@", session$remote[[1]]$host)
+    }
+    createDir(dir, clean)
+    con <- ssh_connect(host)
+    scp_download(con, file.path(outputDir, "*"), dir, verbose=FALSE)
+    ssh_disconnect(con)
 }
 
 ## Running Docker container
