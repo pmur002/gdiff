@@ -8,6 +8,6 @@ Description: Functions for performing graphical difference testing.
              Differences are generated between raster images.
              Differences can also be generated for text-based graphical
              formats, like SVG.  
-Imports: grDevices, parallel, magick, ssh, stevedore
+Imports: grDevices, parallel, magick, pdftools, ssh, stevedore
 URL: https://github.com/pmur002/
 License: GPL (>= 2)

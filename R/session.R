@@ -26,6 +26,18 @@ generateOutput.currentsession <- function(session, code, dir,
     }
 }
 
+generatePkgOutput.currentsession <- function(session, pkg, dir,
+                                             device, clean) {
+    oldPaths <- .libPaths()
+    if (!is.null(session$libPaths)) {
+        .libPaths(c(session$libPaths, oldPaths))
+    }
+    gdiffPkgOutput(pkg, dir, device, clean)
+    if (!is.null(session$libPaths)) {
+        .libPaths(oldPaths)
+    }    
+}
+
 ## R session on local machine
 localSession <- function(libPaths=NULL,
                          Rpath=file.path(R.home("bin"), "Rscript"),
@@ -34,8 +46,7 @@ localSession <- function(libPaths=NULL,
             clusterArgs=list(...))
 }
 
-generateOutput.localsession <- function(session, code, dir,
-                                        name, device, clean) {
+generateLocalOutput <- function(session, f) {
     ## Avoid worker session getting library paths from master session
     libVars <- Sys.getenv(c("R_LIBS", "R_LIBS_SITE", "R_LIBS_USER"))
     Sys.setenv(R_LIBS="", R_LIBS_SITE="", R_LIBS_USER="")
@@ -46,6 +57,11 @@ generateOutput.localsession <- function(session, code, dir,
                     session$clusterArgs))
     on.exit(stopCluster(cl))
             
+    clusterCall(cl, f)
+}
+
+generateOutput.localsession <- function(session, code, dir,
+                                        name, device, clean) {
     f <- function() {
         if (!require("gdiff")) {
             install.packages("gdiff")
@@ -56,7 +72,24 @@ generateOutput.localsession <- function(session, code, dir,
         }
         gdiffOutput(code, dir, name, device, clean)
     }
-    clusterCall(cl, f)
+    
+    generateLocalOutput(session, f)
+}
+
+generatePkgOutput.localsession <- function(session, pkg, dir,
+                                           device, clean) {
+    f <- function() {
+        if (!require("gdiff")) {
+            install.packages("gdiff")
+        }
+        if (!is.null(session$libPaths)) {
+            oldPaths <- .libPaths()
+            .libPaths(c(session$libPaths, oldPaths))
+        }
+        gdiffPkgOutput(pkg, dir, device, clean)
+    }
+    
+    generateLocalOutput(session, f)
 }
 
 ## Networked machine (possibly virtual)
@@ -70,26 +103,12 @@ remoteSession.character <- function(remote, libPaths=NULL, Rpath="Rscript",
             clusterArgs=list(...))
 }
 
-generateOutput.remotesession <- function(session, code, dir,
-                                         name, device, clean) {
+generateRemoteOutput <- function(session, dir, clean, f) {
     ## Use ssh::ssh_connect() and ssh::ssh_exec_wait() ?
     ## Generate output on remote session
     cl <- do.call(makePSOCKcluster,
                   c(list(session$remote, rscript=session$Rpath),
                     session$clusterArgs))
-    f <- function() {
-        if (!require("gdiff")) {
-            install.packages("gdiff")
-        }
-        outputDir <- tempfile("gdiffOutput")
-        dir.create(outputDir)
-        if (!is.null(session$libPaths)) {
-            oldPaths <- .libPaths()
-            .libPaths(c(session$libPaths, oldPaths))
-        }
-        gdiffOutput(code, outputDir, name, device, clean)
-        outputDir
-    }
     outputDir <- clusterCall(cl, f)[[1]]
     ## Harvest output from remote session
     if ("user" %in% names(session$clusterArgs)) {
@@ -104,8 +123,58 @@ generateOutput.remotesession <- function(session, code, dir,
     stopCluster(cl)    
 }
 
+generateOutput.remotesession <- function(session, code, dir,
+                                         name, device, clean) {
+    f <- function() {
+        if (!require("gdiff")) {
+            install.packages("gdiff")
+        }
+        outputDir <- tempfile("gdiffOutput")
+        dir.create(outputDir)
+        if (!is.null(session$libPaths)) {
+            oldPaths <- .libPaths()
+            .libPaths(c(session$libPaths, oldPaths))
+        }
+        gdiffOutput(code, outputDir, name, device, clean)
+        outputDir
+    }
+    generateRemoteOutput(session, dir, clean, f)
+}
+
+generatePkgOutput.remotesession <- function(session, pkg, dir,
+                                            device, clean) {
+    f <- function() {
+        if (!require("gdiff")) {
+            install.packages("gdiff")
+        }
+        outputDir <- tempfile("gdiffOutput")
+        dir.create(outputDir)
+        if (!is.null(session$libPaths)) {
+            oldPaths <- .libPaths()
+            .libPaths(c(session$libPaths, oldPaths))
+        }
+        gdiffPkgOutput(pkg, outputDir, device, clean)
+        outputDir
+    }
+    generateRemoteOutput(session, dir, clean, f)
+}
+
 remoteSession.cluster <- function(remote, libPaths=NULL, user=NULL, ...) {
     session("clustersession", libPaths=libPaths, user=user, remote=remote)
+}
+
+generateClusterOutput <- function(session, dir, clean, f) {
+    outputDir <- clusterCall(cl, f)[[1]]
+    ## Harvest output from remote session
+    if (is.null(session$user)) {
+        host <- session$remote[[1]]$host
+    } else {
+        host <- paste0(session$user, "@", session$remote[[1]]$host)
+    }
+    createDir(dir, clean)
+    con <- ssh_connect(host)
+    scp_download(con, file.path(outputDir, "*"), dir, verbose=FALSE)
+    ssh_disconnect(con)
 }
 
 generateOutput.clustersession <- function(session, code, dir,
@@ -123,17 +192,25 @@ generateOutput.clustersession <- function(session, code, dir,
         gdiffOutput(code, outputDir, name, device, clean)
         outputDir
     }
-    outputDir <- clusterCall(cl, f)[[1]]
-    ## Harvest output from remote session
-    if (is.null(session$user)) {
-        host <- session$remote[[1]]$host
-    } else {
-        host <- paste0(session$user, "@", session$remote[[1]]$host)
+    generateClusterOutput(session, dir, clean, f)
+}
+
+generatePkgOutput.clustersession <- function(session, pkg, dir,
+                                             device, clean) {
+    f <- function() {
+        if (!require("gdiff")) {
+            install.packages("gdiff")
+        }
+        outputDir <- tempfile("gdiffOutput")
+        dir.create(outputDir)
+        if (!is.null(session$libPaths)) {
+            oldPaths <- .libPaths()
+            .libPaths(c(session$libPaths, oldPaths))
+        }
+        gdiffPkgOutput(pkg, outputDir, device, clean)
+        outputDir
     }
-    createDir(dir, clean)
-    con <- ssh_connect(host)
-    scp_download(con, file.path(outputDir, "*"), dir, verbose=FALSE)
-    ssh_disconnect(con)
+    generateClusterOutput(session, dir, clean, f)
 }
 
 ## Running Docker container
@@ -141,11 +218,7 @@ dockerSession <- function(image, libPaths=NULL, Rpath="Rscript", ...) {
     session("dockersession", libPaths=libPaths, Rpath=Rpath, image=image)
 }
 
-generateOutput.dockersession <- function(session, code, dir,
-                                         name, device, clean) {
-    ## Create/clean output directory first
-    ## (Docker container will just generate output in there)
-    createDir(dir, clean)
+generateDockerOutput <- function(session, dir, clean, f) {
     docker <- docker_client()
     ## Create container 
     container <- docker$container$create(session$image,
@@ -157,6 +230,17 @@ generateOutput.dockersession <- function(session, code, dir,
                                          working_dir="/work")
     container$start()
     ## Run R in container to generate output
+    cmd <- c(session$Rpath, "-e", "load(\"gdiff.rda\"); f()")
+    container$exec(cmd)
+    container$stop()
+    container$remove()
+}
+
+generateOutput.dockersession <- function(session, code, dir,
+                                         name, device, clean) {
+    ## Create/clean output directory first
+    ## (Docker container will just generate output in there)
+    createDir(dir, clean)
     paths <- session$libPaths
     f <- function() {
         if (!require("gdiff")) {
@@ -172,10 +256,32 @@ generateOutput.dockersession <- function(session, code, dir,
     funFile <- file.path(dir, "gdiff.rda")
     save("f", "paths", "code", "name", "device", "clean",
          file=funFile)
-    cmd <- c(session$Rpath, "-e", "load(\"gdiff.rda\"); f()")
-    container$exec(cmd)
-    container$stop()
-    container$remove()
+    generateDockerOutput(session, dir, clean, f)
+    ## Clean up
+    unlink(funFile)
+}
+
+generatePkgOutput.dockersession <- function(session, pkg, dir,
+                                            device, clean) {
+    ## Create/clean output directory first
+    ## (Docker container will just generate output in there)
+    createDir(dir, clean)
+    paths <- session$libPaths
+    f <- function() {
+        if (!require("gdiff")) {
+            install.packages("gdiff")
+        }
+        if (!is.null(paths)) {
+            oldPaths <- .libPaths()
+            .libPaths(c(paths, oldPaths))
+        }
+        gdiff::gdiffPkgOutput(pkg, ".", device, clean=FALSE)
+    }
+    environment(f) <- globalenv()
+    funFile <- file.path(dir, "gdiff.rda")
+    save("f", "paths", "pkg", "device", "clean",
+         file=funFile)
+    generateDockerOutput(session, dir, clean, f)
     ## Clean up
     unlink(funFile)
 }

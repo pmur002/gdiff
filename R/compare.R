@@ -45,8 +45,10 @@ print.gcomparison <- function(x, ..., detail=TRUE) {
         if (detail) {
             result <- c(result, "", header, underline())
             result <-c(result,
-                       paste0(x$controlFiles[x$controlInTest][same],
-                              " matches ", x$testFiles[x$testInControl][same]))
+                       ## Use format() to line things up
+                       paste0(format(x$controlFiles[x$controlInTest][same]),
+                              " matches ",
+                              x$testFiles[x$testInControl][same]))
         } else {
             result <- c(result, header)
         }
@@ -56,11 +58,12 @@ print.gcomparison <- function(x, ..., detail=TRUE) {
                            "/", compared, "]")
         if (detail) {
             result <- c(result, "", header, underline())
-            result <- c(result,
-                        paste0(x$controlFiles[x$controlInTest][different],
-                               " differs from ",
-                               x$testFiles[x$testInControl][different],
-                               " (", x$diffs[different], ")"))
+            result <-
+                c(result,
+                  paste0(format(x$controlFiles[x$controlInTest][different]),
+                         " differs from ",
+                         x$testFiles[x$testInControl][different],
+                         " (", x$diffs[different], ")"))
         } else {
             result <- c(result, header)
         }

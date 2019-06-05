@@ -80,3 +80,45 @@ gdiffExamples.function <- function(fun, name=NULL, ...) {
     gdiff(f, name=name, ...)
 }
 
+gdiffPackage <- function(pkg, 
+                         controlDir="Control",
+                         testDir="Test",
+                         compareDir="Compare",
+                         clean=TRUE,
+                         device=pngDevice(),
+                         session=currentSession(),
+                         ncpu=detectCores()) {
+    ## Argument checks
+    if (!is.character(pkg)) {
+        stop("Invalid package name")
+    }
+    if (controlDir == testDir ||
+        controlDir == compareDir ||
+        testDir == compareDir) {
+        stop("Control, test, and compare directories MUST be distinct")
+    }
+    if (is.list(clean)) {
+        checkList(clean, compare=TRUE, class="logical")
+    } else {
+        clean <- list(control=clean, test=clean, compare=clean)
+    }
+    device <- checkDevice(device)
+    if (inherits(session, "gdiff.session")) {
+        session <- list(control=session, test=session)
+    } else {
+        checkList(session, class="gdiff.session")
+    }
+    ## Generate control output
+    generatePkgOutput(session$control, pkg,
+                      controlDir, 
+                      device$control,
+                      clean$control)
+    ## Generate test output
+    generatePkgOutput(session$test, pkg,
+                      testDir, 
+                      device$test,
+                      clean$test)
+    ## Generate comparisons
+    createDir(compareDir, clean$compare)
+    performComparison(controlDir, testDir, compareDir)
+}

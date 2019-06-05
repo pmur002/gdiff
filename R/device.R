@@ -1,5 +1,6 @@
 
-device <- function(name, suffix=name, open, close=dev.off) {
+device <- function(name, suffix=name, open,
+                   close=function(dir, name) dev.off()) {
     d <- list(name=name, suffix=suffix, open=open, close=close)
     class(d) <- "gdiff.device"
     d
@@ -25,6 +26,16 @@ pdfDevice <- function(...) {
            open=function(name) {
                pdf(paste0(name, "-%03d.pdf"),
                    onefile=FALSE, ...)
+           },
+           ## Remove files with no pages
+           close=function(dir, name) {
+               dev.off()
+               files <- list.files(dir, pattern=paste0(name, "-[0-9]+[.]pdf"))
+               for (i in files) {
+                   if (pdf_info(i)$pages == 0) {
+                       unlink(i)
+                   }
+               }
            })
 }
 
