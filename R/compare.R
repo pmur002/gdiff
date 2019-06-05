@@ -31,11 +31,11 @@ performComparison <- function(controlDir, testDir, compareDir) {
                    diffs=diffs,
                    controlInTest=controlInTest,
                    testInControl=testInControl)
-    class(result) <- "gcomparison"
+    class(result) <- "gdiffComparison"
     result
 }
 
-print.gcomparison <- function(x, ..., detail=TRUE) {
+print.gdiffComparison <- function(x, ..., detail=TRUE) {
     result <- NULL
     same <- x$diffs == 0
     different <- !same
