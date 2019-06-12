@@ -116,8 +116,9 @@ gdiffOutput.function <- function(x, dir, name=deparse(substitute(x)), ...) {
         code
     }
     codeFun <- codeGenerator(f)
-    gdiffCore(list(control=codeFun, test=NULL), controlDir=dir, compare=FALSE,
-              ...)
+    gdiffCore(list(control=codeFun, test=NULL), controlDir=dir,
+              testDir="", compare=FALSE, ...)
+    list.files(dir, full.names=TRUE)
 }
 
 gdiffExamplesOutput <- function(fun, dir, ...) {
@@ -135,8 +136,9 @@ gdiffExamplesOutput.character <- function(fun, dir, name=fun, ...) {
         code
     }
     codeFun <- codeGenerator(f)
-    gdiffCore(list(control=codeFun, test=NULL), controlDir=dir, compare=FALSE,
-              ...)
+    gdiffCore(list(control=codeFun, test=NULL), controlDir=dir,
+              testDir="", compare=FALSE, ...)
+    list.files(dir, full.names=TRUE)
 }
 
 gdiffExamplesOutput.function <- function(fun, dir, name=NULL, ...) {
@@ -149,6 +151,7 @@ gdiffPackageOutput <- function(pkg, dir, ...,
     codeFun <- packageCode(pkg)
     gdiffCore(list(control=codeFun, test=NULL), controlDir=dir, compare=FALSE,
               ...)
+    list.files(dir, full.names=TRUE)
 }
 
 ################################################################################
