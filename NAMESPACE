@@ -20,9 +20,25 @@ importFrom("ssh",
 importFrom("stevedore",
            "docker_client")
            
+importFrom("grDevices",
+           "cairo_pdf",
+           "pdf",
+           "png",
+           "postscript")
+
+importFrom("utils",
+           "example",
+           "install.packages")
+
 export("gdiff",
        "gdiffExamples",
        "gdiffPackage",
+
+       "gdiffOutput",
+       "gdiffExamplesOutput",
+       "gdiffPackageOutput",
+
+       "gdiffCompare",
 
        "cairo_pdf_device",
        "pngDevice",
@@ -34,12 +50,15 @@ export("gdiff",
        "localSession",
        "remoteSession",
 
-       "gdiffOutput")
+       "gdiffGenerateOutput")
 
 S3method("gdiff", "function")
 S3method("gdiff", "list")
 S3method("gdiffExamples", "character")
 S3method("gdiffExamples", "function")
+S3method("gdiffOutput", "function")
+S3method("gdiffExamplesOutput", "character")
+S3method("gdiffExamplesOutput", "function")
 
 S3method("generateOutput", "gdiffClusterSession")
 S3method("generateOutput", "gdiffCurrentSession")

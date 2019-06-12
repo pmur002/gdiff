@@ -17,7 +17,7 @@ generateOutput.gdiffCurrentSession <- function(session, codeFun,
     if (!is.null(session$libPaths)) {
         .libPaths(c(session$libPaths, oldPaths))
     }
-    gdiffOutput(codeFun, dir, device, clean)
+    gdiffGenerateOutput(codeFun, dir, device, clean)
     if (!is.null(session$libPaths)) {
         .libPaths(oldPaths)
     }
@@ -51,7 +51,7 @@ generateOutput.gdiffLocalSession <- function(session, codeFun,
             oldPaths <- .libPaths()
             .libPaths(c(session$libPaths, oldPaths))
         }
-        gdiffOutput(codeFun, dir, device, clean)
+        gdiffGenerateOutput(codeFun, dir, device, clean)
     }
     
     clusterCall(cl, f)
@@ -86,7 +86,7 @@ generateOutput.gdiffRemoteSession <- function(session, codeFun,
             oldPaths <- .libPaths()
             .libPaths(c(session$libPaths, oldPaths))
         }
-        gdiffOutput(codeFun, outputDir, device, clean)
+        gdiffGenerateOutput(codeFun, outputDir, device, clean)
         outputDir
     }
 
@@ -124,11 +124,11 @@ generateOutput.gdiffClusterSession <- function(session, codeFun,
             oldPaths <- .libPaths()
             .libPaths(c(session$libPaths, oldPaths))
         }
-        gdiffOutput(codeFun, outputDir, device, clean)
+        gdiffGenerateOutput(codeFun, outputDir, device, clean)
         outputDir
     }
 
-    outputDir <- clusterCall(cl, f)[[1]]
+    outputDir <- clusterCall(session$remote, f)[[1]]
 
     ## Harvest output from remote session
     if (is.null(session$user)) {
@@ -173,7 +173,7 @@ generateOutput.gdiffDockerSession <- function(session, codeFun,
             oldPaths <- .libPaths()
             .libPaths(c(paths, oldPaths))
         }
-        gdiff::gdiffOutput(codeFun, ".", device, clean=FALSE)
+        gdiff::gdiffGenerateOutput(codeFun, ".", device, clean=FALSE)
     }
     environment(f) <- globalenv()
     funFile <- file.path(dir, "gdiff.rda")

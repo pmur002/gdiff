@@ -5,7 +5,7 @@ generateOutput <- function(session, code, dir, name, device, clean) {
 }
 
 ## Useful function for generateOutput() methods
-gdiffOutput <- function(codeGenerator, dir, device, clean) {
+gdiffGenerateOutput <- function(codeGenerator, dir, device, clean) {
     createDir(dir, clean)
     codeList <- codeGenerator()
     f <- function(fun, name) {

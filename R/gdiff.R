@@ -1,14 +1,10 @@
 
 ## The core function
-gdiff <- function(x, ...) {
-    UseMethod("gdiff")
-}
-
 gdiffCore <- function(codeFun,
-                      controlDir="Control",
-                      testDir="Test",
-                      compareDir="Compare",
-                      clean=TRUE,
+                      controlDir=getOption("gdiff.controlDir"),
+                      testDir=getOption("gdiff.testDir"),
+                      compareDir=getOption("gdiff.compareDir"),
+                      clean=TRUE, compare=TRUE,
                       device=pngDevice(),
                       session=currentSession()) {
     ## Argument checks
@@ -39,9 +35,19 @@ gdiffCore <- function(codeFun,
     ## Generate test output
     generateOutput(session$test, codeFun$test,
                    testDir, device$test, clean$test)
-    ## Generate comparisons
-    createDir(compareDir, clean$compare)
-    performComparison(controlDir, testDir, compareDir)
+    if (compare) {
+        ## Generate comparisons
+        createDir(compareDir, clean$compare)
+        performComparison(controlDir, testDir, compareDir)
+    } else {
+        invisible()
+    }
+}
+
+################################################################################
+## Generate control and test output and compare
+gdiff <- function(x, ...) {
+    UseMethod("gdiff")
 }
 
 gdiff.function <- function(x, name=deparse(substitute(x)), ...) {
@@ -88,11 +94,65 @@ gdiffExamples.character <- function(fun, name=fun, ...) {
 
 gdiffExamples.function <- function(fun, name=NULL, ...) {
     fun <- deparse(substitute(fun))
-    gdiffExamples(fun)
+    gdiffExamples(fun, fun, ...)
 }
 
 gdiffPackage <- function(pkg, ..., 
                          ncpu=detectCores()) {
     codeFun <- packageCode(pkg)
     gdiffCore(codeFun, ...)
+}
+
+################################################################################
+## Just generate output
+gdiffOutput <- function(x, dir, ...) {
+    UseMethod("gdiffOutput")
+}
+
+gdiffOutput.function <- function(x, dir, name=deparse(substitute(x)), ...) {
+    f <- function() {
+        code <- list(x)
+        names(code) <- name
+        code
+    }
+    codeFun <- codeGenerator(f)
+    gdiffCore(list(control=codeFun, test=NULL), controlDir=dir, compare=FALSE,
+              ...)
+}
+
+gdiffExamplesOutput <- function(fun, dir, ...) {
+    UseMethod("gdiffExamplesOutput")
+}
+
+gdiffExamplesOutput.character <- function(fun, dir, name=fun, ...) {
+    f <- function() {
+        code <- list(
+            function() {
+                example(fun,
+                        character.only=TRUE, setRNG=TRUE, echo=FALSE, ask=FALSE)
+            })
+        names(code) <- name
+        code
+    }
+    codeFun <- codeGenerator(f)
+    gdiffCore(list(control=codeFun, test=NULL), controlDir=dir, compare=FALSE,
+              ...)
+}
+
+gdiffExamplesOutput.function <- function(fun, dir, name=NULL, ...) {
+    fun <- deparse(substitute(fun))
+    gdiffExamples(fun, dir, fun, ...)
+}
+
+gdiffPackageOutput <- function(pkg, dir, ..., 
+                               ncpu=detectCores()) {
+    codeFun <- packageCode(pkg)
+    gdiffCore(list(control=codeFun, test=NULL), controlDir=dir, compare=FALSE,
+              ...)
+}
+
+################################################################################
+## Just compare
+gdiffCompare <- function(controlDir, testDir, compareDir, ...) {
+    gdiffCore(codeFun=NULL, controlDir, testDir, compareDir, ...)
 }
