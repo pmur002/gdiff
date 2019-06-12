@@ -12,14 +12,6 @@ importFrom("parallel",
 importFrom("pdftools",
            "pdf_info")
 
-importFrom("ssh",
-           "scp_download",
-           "ssh_connect",
-           "ssh_disconnect")
-
-importFrom("stevedore",
-           "docker_client")
-           
 importFrom("grDevices",
            "cairo_pdf",
            "pdf",

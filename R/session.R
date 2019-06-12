@@ -59,6 +59,9 @@ generateOutput.gdiffLocalSession <- function(session, codeFun,
 
 ## Networked machine (possibly virtual)
 remoteSession <- function(remote, ...) {
+    if (!requireNamespace("ssh", quietly = TRUE)) {
+        stop("The 'ssh' package must be installed")
+    }
     UseMethod("remoteSession")
 }
 
@@ -99,9 +102,9 @@ generateOutput.gdiffRemoteSession <- function(session, codeFun,
         host <- session$remote
     }
     createDir(dir, clean)
-    con <- ssh_connect(host)
-    scp_download(con, file.path(outputDir, "*"), dir, verbose=FALSE)
-    ssh_disconnect(con)
+    con <- ssh::ssh_connect(host)
+    ssh::scp_download(con, file.path(outputDir, "*"), dir, verbose=FALSE)
+    ssh::ssh_disconnect(con)
     stopCluster(cl)    
 }
 
@@ -137,13 +140,16 @@ generateOutput.gdiffClusterSession <- function(session, codeFun,
         host <- paste0(session$user, "@", session$remote[[1]]$host)
     }
     createDir(dir, clean)
-    con <- ssh_connect(host)
-    scp_download(con, file.path(outputDir, "*"), dir, verbose=FALSE)
-    ssh_disconnect(con)
+    con <- ssh::ssh_connect(host)
+    ssh::scp_download(con, file.path(outputDir, "*"), dir, verbose=FALSE)
+    ssh::ssh_disconnect(con)
 }
 
 ## Running Docker container
 dockerSession <- function(image, libPaths=NULL, Rpath="Rscript", ...) {
+    if (!requireNamespace("stevedore", quietly = TRUE)) {
+        stop("The 'stevedore' package must be installed")
+    }
     session("gdiffDockerSession", libPaths=libPaths, Rpath=Rpath, image=image)
 }
 
@@ -153,7 +159,7 @@ generateOutput.gdiffDockerSession <- function(session, codeFun,
     ## (Docker container will just generate output in there)
     createDir(dir, clean)
 
-    docker <- docker_client()
+    docker <- stevedore::docker_client()
     ## Create container 
     container <- docker$container$create(session$image,
                                          ## Keep container open
