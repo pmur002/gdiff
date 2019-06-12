@@ -147,19 +147,6 @@ if (nchar(remoteHost) && nchar(remoteUser)) {
 ## Docker version
 ## Has to be run from 'sudo R' session (if user not in docker group)
 ## Generate image with R and gdiff installed
-library(stevedore)
-docker <- docker_client()
-DockerDir <- file.path(tempdir(), "Docker")
-dir.create(DockerDir)
-DockerFile <- file.path(DockerDir, "Dockerfile")
-DockerText <- c(
-    "FROM pmur002/rcheckserver-ubuntu-r-release",
-    "RUN Rscript -e 'install.packages(c(\"magick\", \"pdftools\", \"ssh\", \"stevedore\"))'",
-    "RUN Rscript -e 'install.packages(\"gridBezier\")'",
-    "RUN Rscript -e 'install.packages(\"devtools\")'",
-    "RUN Rscript -e 'library(devtools); install_github(\"pmur002/gdiff\")'")
-writeLines(DockerText, DockerFile)
-docker$image$build(DockerDir, tag="pmur002/gdiff-test")
 f <- function() plot(1)
 ## NOTE that PDF same but PNG different (PNG set up on container different?)
 gdiff(f,
