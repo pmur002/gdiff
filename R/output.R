@@ -6,10 +6,10 @@ generateOutput <- function(session, code, dir, name, device, clean) {
 
 ## Useful function for generateOutput() methods
 gdiffGenerateOutput <- function(codeFun, dir, device, clean) {
-    createDir(dir, clean)
     ## 'codeFun' can be NULL
     ## (in which case, do nothing)
     if (!is.null(codeFun)) {
+        createDir(dir, clean)
         codeList <- codeFun()
         f <- function(fun, name) {
             ## Allow function to be generated as NULL
