@@ -68,7 +68,8 @@ print.gdiffComparison <- function(x, ..., detail=TRUE) {
                   paste0(format(x$controlFiles[x$controlInTest][different]),
                          " differs from ",
                          x$testFiles[x$testInControl][different],
-                         " (", x$diffs[different], ")"))
+                         " (", x$diffFiles[different], " [",
+                         x$diffs[different], "])"))
         } else {
             result <- c(result, header)
         }
