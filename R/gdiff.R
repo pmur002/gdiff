@@ -13,7 +13,7 @@ gdiffCore <- function(codeFun,
         testDir == compareDir) {
         stop("Control, test, and compare directories MUST be distinct")
     }
-    if (inherits(codeFun, "gdiffCodeGenerator")) {
+    if (inherits(codeFun, "gdiffCodeGenerator") || is.null(codeFun)) {
         codeFun <- list(control=codeFun, test=codeFun)
     } else {
         checkList(codeFun, class="gdiffCodeGenerator", allowNull=TRUE)
