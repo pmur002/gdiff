@@ -22,9 +22,14 @@ performComparison <- function(controlDir, testDir, compareDir) {
                            paste0(basename(compareFiles$control), ".png"))
     ## TODO
     ## parallelise this step
-    diffs <- mapply(compare,
-                    compareFiles$control, compareFiles$test, diffFiles,
-                    SIMPLIFY=TRUE)
+    if (length(compareFiles$control) &&
+        length(compareFiles$test)) {
+        diffs <- mapply(compare,
+                        compareFiles$control, compareFiles$test, diffFiles,
+                        SIMPLIFY=TRUE)
+    } else {
+        diffs <- numeric()
+    }
     result <- list(controlFiles=controlFiles,
                    testFiles=testFiles,
                    diffFiles=diffFiles,
