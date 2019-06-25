@@ -105,11 +105,14 @@ f <- function() {
     example(axis, setRNG=TRUE, echo=FALSE, ask=FALSE)
 }
 ## Allow for different R versions to correspond
-Sys.setenv("R_DEFAULT_SAVE_VERSION"=2,
-           "R_DEFAULT_SERIALIZE_VERSION"=2)
-gdiff(f,
-      session=list(control=currentSession(),
-                   test=localSession(Rpath="/home/pmur002/R/r-devel/BUILD/bin/Rscript")))
+rPath <- Sys.getenv("GDIFF_RPATH")
+if (nchar(rPath)) {
+    Sys.setenv("R_DEFAULT_SAVE_VERSION"=2,
+               "R_DEFAULT_SERIALIZE_VERSION"=2)
+    gdiff(f,
+          session=list(control=currentSession(),
+                       test=localSession(Rpath=rPath)))
+}
 
 ## Different host (different platform/OS)
 ## Hardware/VM version (other office machine)
@@ -159,17 +162,20 @@ gdiffExamples("plot")
 ## Actual function rather than just function name
 gdiffExamples(plot)
 ## Different R versions
-gdiffExamples("axis",
-              session=list(control=currentSession(),
-                           test=localSession(Rpath="/home/pmur002/R/r-devel/BUILD/bin/Rscript")))
-
+if (nchar(rPath)) {
+    gdiffExamples("axis",
+                  session=list(control=currentSession(),
+                               test=localSession(Rpath=rPath)))
+}
 ## Test entire package
 ## currentsession
 gdiffPackage("gridBezier")
 ## localsession
-gdiffPackage("gridBezier",
-             session=list(control=currentSession(),
-                          test=localSession(Rpath="/home/pmur002/R/r-devel/BUILD/bin/Rscript")))
+if (nchar(rPath)) {
+    gdiffPackage("gridBezier",
+                 session=list(control=currentSession(),
+                              test=localSession(Rpath=rPath)))
+}
 if (nchar(remoteHost) && nchar(remoteUser)) {
     ## remotesession
     gdiffPackage("gridBezier",

@@ -155,6 +155,10 @@ dockerSession <- function(image, libPaths=NULL, Rpath="Rscript", ...) {
 
 generateOutput.gdiffDockerSession <- function(session, codeFun,
                                               dir, device, clean) {
+
+    ## 'codeFun' can be NULL, in which case do nothing
+    if (is.null(codeFun)) return()
+    
     ## Create/clean output directory first
     ## (Docker container will just generate output in there)
     createDir(dir, clean)
