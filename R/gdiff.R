@@ -82,8 +82,13 @@ gdiffExamples.character <- function(fun, name=fun, ...) {
     f <- function() {
         code <- list(
             function() {
-                example(fun,
-                        character.only=TRUE, setRNG=TRUE, echo=FALSE, ask=FALSE)
+                ## Need echo=TRUE to print things like 'lattice' plots
+                ## BUT do not want it spewed on screen
+                capture.output(example(fun,
+                                       character.only=TRUE,
+                                       setRNG=TRUE,
+                                       echo=FALSE,
+                                       ask=FALSE))
             })
         names(code) <- name
         code
@@ -129,8 +134,13 @@ gdiffExamplesOutput.character <- function(fun, dir, name=fun, ...) {
     f <- function() {
         code <- list(
             function() {
-                example(fun,
-                        character.only=TRUE, setRNG=TRUE, echo=FALSE, ask=FALSE)
+                ## Need echo=TRUE to print things like 'lattice' plots
+                ## BUT do not want it spewed on screen
+                capture.output(example(fun,
+                                       character.only=TRUE,
+                                       setRNG=TRUE,
+                                       echo=TRUE,
+                                       ask=FALSE))
             })
         names(code) <- name
         code
@@ -142,8 +152,8 @@ gdiffExamplesOutput.character <- function(fun, dir, name=fun, ...) {
 }
 
 gdiffExamplesOutput.function <- function(fun, dir, name=NULL, ...) {
-    fun <- deparse(substitute(fun))
-    gdiffExamples(fun, dir, fun, ...)
+    name <- deparse(substitute(fun))
+    gdiffExamplesOutput(fun, dir, name, ...)
 }
 
 gdiffPackageOutput <- function(pkg, dir, ..., 

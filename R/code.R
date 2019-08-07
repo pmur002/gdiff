@@ -11,9 +11,14 @@ packageCode <- function(pkg) {
         code <- lapply(fnames,
                        function(fname) {
                            function()
-                               example(fname,
-                                       character.only=TRUE,
-                                       setRNG=TRUE, echo=FALSE, ask=FALSE)
+                               ## Need echo=TRUE to print things like
+                               ## 'lattice' plots
+                               ## BUT do not want it spewed on screen
+                               capture.output(example(fname,
+                                                      character.only=TRUE,
+                                                      setRNG=TRUE,
+                                                      echo=TRUE,
+                                                      ask=FALSE))
                        })
         names(code) <- fnames
         code

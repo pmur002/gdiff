@@ -24,7 +24,7 @@ gdiffGenerateOutput <- function(codeFun, dir, device, clean) {
             }
         }
         if (length(codeList)) {
-            invisible(parallel::mcmapply(f, codeList, names(codeList)))
+            invisible(mapply(f, codeList, names(codeList)))
         }
     }
 }
