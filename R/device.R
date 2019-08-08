@@ -6,17 +6,22 @@ device <- function(name, suffix=name, open,
     d
 }
 
+## Conversion for function names that do not translate to file names
+safeName <- function(name) {
+    gsub("%", "percent", name)
+}
+
 pngDevice <- function(...) {
     device("png",
            open=function(name) {
-               png(paste0(name, "-%03d.png"), ...)
+               png(paste0(safeName(name), "-%03d.png"), ...)
            })
 }
 
 postscriptDevice <- function(...) {
     device("postscript",
            open=function(name) {
-               postscript(paste0(name, "-%03d.ps"),
+               postscript(paste0(safeName(name), "-%03d.ps"),
                           onefile=FALSE, ...)
            })
 }
@@ -24,14 +29,15 @@ postscriptDevice <- function(...) {
 pdfDevice <- function(...) {
     device("pdf",
            open=function(name) {
-               pdf(paste0(name, "-%03d.pdf"),
+               pdf(paste0(safeName(name), "-%03d.pdf"),
                    onefile=FALSE, ...)
            },
            ## Remove files with no pages
            close=function(dir, name) {
                dev.off()
                files <- list.files(dir,
-                                   pattern=paste0(name, "-[0-9]+[.]pdf"),
+                                   pattern=paste0(safeName(name),
+                                                  "-[0-9]+[.]pdf"),
                                    full.names=TRUE)
                for (i in files) {
                    if (pdf_info(i)$pages == 0) {
@@ -44,7 +50,7 @@ pdfDevice <- function(...) {
 cairo_pdf_device <- function(suffix=".cairo.pdf", ...) {
     device("cairo_pdf",
            open=function(name) {
-               cairo_pdf(paste0(name, "-%03d", suffix),
+               cairo_pdf(paste0(safeName(name), "-%03d", suffix),
                          onefile=FALSE, ...)
            })
 }

@@ -4,6 +4,7 @@ importFrom("grDevices",
 
 importFrom("parallel",
            "clusterCall",
+           "clusterMap",
            "detectCores",
            "makePSOCKcluster",
            "mcmapply",

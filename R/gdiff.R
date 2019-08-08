@@ -6,7 +6,8 @@ gdiffCore <- function(codeFun,
                       compareDir=getOption("gdiff.compareDir"),
                       clean=TRUE, compare=TRUE,
                       device=pngDevice(),
-                      session=currentSession()) {
+                      session=currentSession(),
+                      ncpu=1) {
     ## Argument checks
     if (controlDir == testDir ||
         controlDir == compareDir ||
@@ -31,10 +32,10 @@ gdiffCore <- function(codeFun,
     }
     ## Generate control output
     generateOutput(session$control, codeFun$control,
-                   controlDir, device$control, clean$control)
+                   controlDir, device$control, clean$control, ncpu)
     ## Generate test output
     generateOutput(session$test, codeFun$test,
-                   testDir, device$test, clean$test)
+                   testDir, device$test, clean$test, ncpu)
     if (compare) {
         ## Generate comparisons
         createDir(compareDir, clean$compare)
@@ -102,10 +103,9 @@ gdiffExamples.function <- function(fun, name=NULL, ...) {
     gdiffExamples(fun, fun, ...)
 }
 
-gdiffPackage <- function(pkg, ..., 
-                         ncpu=detectCores()) {
+gdiffPackage <- function(pkg, ..., ncpu=1) {
     codeFun <- packageCode(pkg)
-    gdiffCore(codeFun, ...)
+    gdiffCore(codeFun, ..., ncpu=ncpu)
 }
 
 ################################################################################
@@ -156,11 +156,11 @@ gdiffExamplesOutput.function <- function(fun, dir, name=NULL, ...) {
     gdiffExamplesOutput(fun, dir, name, ...)
 }
 
-gdiffPackageOutput <- function(pkg, dir, ..., 
-                               ncpu=detectCores()) {
+gdiffPackageOutput <- function(pkg, dir, ..., ncpu=1) {
     codeFun <- packageCode(pkg)
-    gdiffCore(list(control=codeFun, test=NULL), controlDir=dir, compare=FALSE,
-              ...)
+    gdiffCore(list(control=codeFun, test=NULL), controlDir=dir,
+              testDir="", compare=FALSE,
+              ..., ncpu=ncpu)
     list.files(dir, full.names=TRUE)
 }
 
