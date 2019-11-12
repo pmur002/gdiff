@@ -16,11 +16,9 @@ generateOutput.gdiffCurrentSession <- function(session, codeFun,
     oldPaths <- .libPaths()
     if (!is.null(session$libPaths)) {
         .libPaths(c(session$libPaths, oldPaths))
+        on.exit(.libPaths(oldPaths))
     }
     gdiffGenerateOutput(codeFun, dir, device, clean, ncpu)
-    if (!is.null(session$libPaths)) {
-        .libPaths(oldPaths)
-    }
 }
 
 ## R session on local machine

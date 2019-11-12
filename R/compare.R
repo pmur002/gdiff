@@ -12,8 +12,14 @@ compare <- function(controlFile, testFile, diffFile) {
 performComparison <- function(controlDir, testDir, compareDir) {
     controlFiles <- list.files(controlDir, full.names=TRUE)
     controlBland <- basename(controlFiles)
+    if (anyDuplicated(controlBland)) {
+        stop("Multiple control files with the same name")
+    }
     testFiles <- list.files(testDir, full.names=TRUE)
     testBland <- basename(testFiles)
+    if (anyDuplicated(testBland)) {
+        stop("Multiple test files with the same name")
+    }
     controlInTest <- controlBland %in% testBland
     testInControl <- testBland %in% controlBland
     compareFiles <- list(control=sort(controlFiles[controlInTest]),

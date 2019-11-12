@@ -9,6 +9,10 @@ gdiffGenerateOutput <- function(codeFun, dir, device, clean, ncpu) {
     ## 'codeFun' can be NULL
     ## (in which case, do nothing)
     if (!is.null(codeFun)) {
+        if (length(dir) > 1) {
+            dir <- dir[1]
+            warning("Multiple output directories specified: only using the first")
+        }
         createDir(dir, clean)
         codeList <- codeFun()
         f <- function(fun, name) {

@@ -9,9 +9,14 @@ gdiffCore <- function(codeFun,
                       session=currentSession(),
                       ncpu=1) {
     ## Argument checks
-    if (controlDir == testDir ||
-        controlDir == compareDir ||
-        testDir == compareDir) {
+    if (length(compareDir) > 1) {
+        stop("There can only be one compare directory")
+    }
+    ## gdiffCompare() allows multiple controlDir and/or testDir
+    if (any(controlDir %in% testDir) ||
+        any(testDir %in% controlDir) ||
+        any(controlDir %in% compareDir) ||
+        any(testDir %in% compareDir)) {
         stop("Control, test, and compare directories MUST be distinct")
     }
     if (inherits(codeFun, "gdiffCodeGenerator") || is.null(codeFun)) {
@@ -167,5 +172,6 @@ gdiffPackageOutput <- function(pkg, dir, ..., ncpu=1) {
 ################################################################################
 ## Just compare
 gdiffCompare <- function(controlDir, testDir, compareDir, ...) {
+    ## controlDir and testDir can be vectors
     gdiffCore(codeFun=NULL, controlDir, testDir, compareDir, ...)
 }
