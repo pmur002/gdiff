@@ -185,7 +185,7 @@ generateOutput.gdiffDockerSession <- function(session, codeFun,
     }
     environment(f) <- globalenv()
     funFile <- file.path(dir, "gdiff.rda")
-    save("f", "paths", "codeFun", "device", "clean",
+    save("f", "paths", "codeFun", "device", "clean", "ncpu",
          file=funFile)
     
     ## Run R in container to generate output

@@ -36,12 +36,27 @@ performComparison <- function(controlDir, testDir, compareDir) {
     } else {
         diffs <- numeric()
     }
+    ## Load session info from Control and Test directories
+    getInfo <- function(dir, files) {
+        infoFile <- file.path(dir, gdiffSession)
+        numOutput <- sum(dirname(files) == dir)
+        ## Directory can contain output that is NOT from 'gdiff'
+        if (file.exists(infoFile)) {
+            list(info=readRDS(infoFile), count=numOutput)
+        } else {
+            list(info=NULL, count=numOutput)
+        }
+    }
+    controlInfo <- lapply(controlDir, getInfo, controlFiles)
+    testInfo <- lapply(testDir, getInfo, testFiles)
     result <- list(controlFiles=controlFiles,
                    testFiles=testFiles,
                    diffFiles=diffFiles,
                    diffs=diffs,
                    controlInTest=controlInTest,
-                   testInControl=testInControl)
+                   testInControl=testInControl,
+                   controlInfo=controlInfo,
+                   testInfo=testInfo)
     class(result) <- "gdiffComparison"
     result
 }

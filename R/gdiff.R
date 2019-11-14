@@ -5,7 +5,7 @@ gdiffCore <- function(codeFun,
                       testDir=getOption("gdiff.testDir"),
                       compareDir=getOption("gdiff.compareDir"),
                       clean=TRUE, compare=TRUE,
-                      device=pngDevice(),
+                      device=getOption("gdiff.device"),
                       session=currentSession(),
                       ncpu=1) {
     ## Argument checks
@@ -70,12 +70,16 @@ gdiff.list <- function(x, name, ...) {
     checkList(x, class="function", allowNull=TRUE)
     codeFun <- lapply(x,
                       function(fun) {
-                          f <- function() {
-                              code <- list(fun)
-                              names(code) <- name
-                              code
+                          if (is.null(fun)) {
+                              fun
+                          } else {
+                              f <- function() {
+                                  code <- list(fun)
+                                  names(code) <- name
+                                  code
+                              }
+                              codeGenerator(f)
                           }
-                          codeGenerator(f)
                       })
     gdiffCore(codeFun, ...)
 }

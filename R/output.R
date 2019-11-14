@@ -1,6 +1,6 @@
 
 ## Functions for generating graphical output
-generateOutput <- function(session, code, dir, name, device, clean, ncpu) {
+generateOutput <- function(session, code, dir, device, clean, ncpu) {
     UseMethod("generateOutput")
 }
 
@@ -14,6 +14,13 @@ gdiffGenerateOutput <- function(codeFun, dir, device, clean, ncpu) {
             warning("Multiple output directories specified: only using the first")
         }
         createDir(dir, clean)
+        sessionFile <- file.path(dir, gdiffSession)
+        if (file.exists(sessionFile)) {
+            stop("Directory already contains 'gdiff' output")
+        }
+        info <- sessionInfo()
+        ## Use version 2 for maximum compatiblity across R sessions
+        saveRDS(info, file=sessionFile, version=2)
         codeList <- codeFun()
         f <- function(fun, name) {
             ## Allow function to be generated as NULL

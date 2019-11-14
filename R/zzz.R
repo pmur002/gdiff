@@ -2,5 +2,9 @@
 .onLoad <- function(libname, pkgname) {
     options("gdiff.controlDir"="Control",
             "gdiff.testDir"="Test",
-            "gdiff.compareDir"="Compare")
+            "gdiff.compareDir"="Compare",
+            "gdiff.device"=pngDevice())
 }
+
+gdiffSession <- ".gdiffSession"
+
