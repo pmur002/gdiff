@@ -1,5 +1,5 @@
 
-device <- function(name, suffix=name, open,
+gdiffDevice <- function(name, suffix=name, open,
                    close=function(dir, name) dev.off()) {
     d <- list(name=name, suffix=suffix, open=open, close=close)
     class(d) <- "gdiffDevice"
@@ -12,14 +12,14 @@ safeName <- function(name) {
 }
 
 pngDevice <- function(...) {
-    device("png",
+    gdiffDevice("png",
            open=function(name) {
                png(paste0(safeName(name), "-%03d.png"), ...)
            })
 }
 
 postscriptDevice <- function(...) {
-    device("postscript",
+    gdiffDevice("postscript",
            open=function(name) {
                postscript(paste0(safeName(name), "-%03d.ps"),
                           onefile=FALSE, ...)
@@ -27,7 +27,7 @@ postscriptDevice <- function(...) {
 }
 
 pdfDevice <- function(...) {
-    device("pdf",
+    gdiffDevice("pdf",
            open=function(name) {
                pdf(paste0(safeName(name), "-%03d.pdf"),
                    onefile=FALSE, ...)
@@ -48,7 +48,7 @@ pdfDevice <- function(...) {
 }
 
 cairo_pdf_device <- function(suffix=".cairo.pdf", ...) {
-    device("cairo_pdf",
+    gdiffDevice("cairo_pdf",
            open=function(name) {
                cairo_pdf(paste0(safeName(name), "-%03d", suffix),
                          onefile=FALSE, ...)
