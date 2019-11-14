@@ -33,6 +33,7 @@ export("gdiff",
 
        "gdiffCompare",
 
+       "gdiffDevice",
        "cairo_pdf_device",
        "pngDevice",
        "pdfDevice",

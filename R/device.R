@@ -1,6 +1,6 @@
 
 gdiffDevice <- function(name, suffix=name, open,
-                   close=function(dir, name) dev.off()) {
+                        close=function(dir, name) dev.off()) {
     d <- list(name=name, suffix=suffix, open=open, close=close)
     class(d) <- "gdiffDevice"
     d
@@ -13,46 +13,46 @@ safeName <- function(name) {
 
 pngDevice <- function(...) {
     gdiffDevice("png",
-           open=function(name) {
-               png(paste0(safeName(name), "-%03d.png"), ...)
-           })
+                open=function(name) {
+                    png(paste0(safeName(name), "-%03d.png"), ...)
+                })
 }
 
 postscriptDevice <- function(...) {
     gdiffDevice("postscript",
-           open=function(name) {
-               postscript(paste0(safeName(name), "-%03d.ps"),
-                          onefile=FALSE, ...)
-           })
+                open=function(name) {
+                    postscript(paste0(safeName(name), "-%03d.ps"),
+                               onefile=FALSE, ...)
+                })
 }
 
 pdfDevice <- function(...) {
     gdiffDevice("pdf",
-           open=function(name) {
-               pdf(paste0(safeName(name), "-%03d.pdf"),
-                   onefile=FALSE, ...)
-           },
-           ## Remove files with no pages
-           close=function(dir, name) {
-               dev.off()
-               files <- list.files(dir,
-                                   pattern=paste0(safeName(name),
-                                                  "-[0-9]+[.]pdf"),
-                                   full.names=TRUE)
-               for (i in files) {
-                   if (pdf_info(i)$pages == 0) {
-                       unlink(i)
-                   }
-               }
-           })
+                open=function(name) {
+                    pdf(paste0(safeName(name), "-%03d.pdf"),
+                        onefile=FALSE, ...)
+                },
+                ## Remove files with no pages
+                close=function(dir, name) {
+                    dev.off()
+                    files <- list.files(dir,
+                                        pattern=paste0(safeName(name),
+                                                       "-[0-9]+[.]pdf"),
+                                        full.names=TRUE)
+                    for (i in files) {
+                        if (pdf_info(i)$pages == 0) {
+                            unlink(i)
+                        }
+                    }
+                })
 }
 
 cairo_pdf_device <- function(suffix=".cairo.pdf", ...) {
     gdiffDevice("cairo_pdf",
-           open=function(name) {
-               cairo_pdf(paste0(safeName(name), "-%03d", suffix),
-                         onefile=FALSE, ...)
-           })
+                open=function(name) {
+                    cairo_pdf(paste0(safeName(name), "-%03d", suffix),
+                              onefile=FALSE, ...)
+                })
 }
 
 checkDevice <- function(device) {
