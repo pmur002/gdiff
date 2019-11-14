@@ -1,5 +1,5 @@
 
-codeGenerator <- function(fun, class=NULL, ...) {
+gdiffCodeGenerator <- function(fun, class=NULL, ...) {
     class(fun) <- c(class, "gdiffCodeGenerator")
     fun
 }
@@ -27,6 +27,6 @@ packageCode <- function(pkg) {
         names(code) <- fnames
         code
     }
-    codeGenerator(f)
+    gdiffCodeGenerator(f)
 }
         
