@@ -38,7 +38,7 @@ performComparison <- function(controlDir, testDir, compareDir) {
     }
     ## Load session info from Control and Test directories
     getInfo <- function(dir, files) {
-        infoFile <- file.path(dir, gdiffSession)
+        infoFile <- file.path(dir, gdiffSessionFile)
         numOutput <- sum(dirname(files) == dir)
         ## Directory can contain output that is NOT from 'gdiff'
         if (file.exists(infoFile)) {

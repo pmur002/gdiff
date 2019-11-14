@@ -14,7 +14,7 @@ gdiffGenerateOutput <- function(codeFun, dir, device, clean, ncpu) {
             warning("Multiple output directories specified: only using the first")
         }
         createDir(dir, clean)
-        sessionFile <- file.path(dir, gdiffSession)
+        sessionFile <- file.path(dir, gdiffSessionFile)
         if (file.exists(sessionFile)) {
             stop("Directory already contains 'gdiff' output")
         }

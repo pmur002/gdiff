@@ -1,6 +1,6 @@
 
 ## Define "gdiffSession" objects
-session <- function(class, ...) {
+gdiffSession <- function(class, ...) {
     h <- list(...)
     class(h) <- c(class, "gdiffSession")
     h
@@ -8,7 +8,7 @@ session <- function(class, ...) {
 
 ## The current R session
 currentSession <- function(libPaths=NULL) {
-    session("gdiffCurrentSession", libPaths=libPaths)
+    gdiffSession("gdiffCurrentSession", libPaths=libPaths)
 }
 
 generateOutput.gdiffCurrentSession <- function(session, codeFun,
@@ -25,8 +25,8 @@ generateOutput.gdiffCurrentSession <- function(session, codeFun,
 localSession <- function(libPaths=NULL,
                          Rpath=file.path(R.home("bin"), "Rscript"),
                          ...) {
-    session("gdiffLocalSession", libPaths=libPaths, Rpath=Rpath,
-            clusterArgs=list(...))
+    gdiffSession("gdiffLocalSession", libPaths=libPaths, Rpath=Rpath,
+                 clusterArgs=list(...))
 }
 
 generateOutput.gdiffLocalSession <- function(session, codeFun,
@@ -65,8 +65,9 @@ remoteSession <- function(remote, ...) {
 
 remoteSession.character <- function(remote, libPaths=NULL, Rpath="Rscript",
                                     ...) {
-    session("gdiffRemoteSession", libPaths=libPaths, Rpath=Rpath, remote=remote,
-            clusterArgs=list(...))
+    gdiffSession("gdiffRemoteSession",
+                 libPaths=libPaths, Rpath=Rpath, remote=remote,
+                 clusterArgs=list(...))
 }
 
 generateOutput.gdiffRemoteSession <- function(session, codeFun,
@@ -107,7 +108,8 @@ generateOutput.gdiffRemoteSession <- function(session, codeFun,
 }
 
 remoteSession.cluster <- function(remote, libPaths=NULL, user=NULL, ...) {
-    session("gdiffClusterSession", libPaths=libPaths, user=user, remote=remote)
+    gdiffSession("gdiffClusterSession",
+                 libPaths=libPaths, user=user, remote=remote)
 }
 
 generateClusterOutput <- function(session, dir, clean, f) {
@@ -148,7 +150,8 @@ dockerSession <- function(image, libPaths=NULL, Rpath="Rscript", ...) {
     if (!requireNamespace("stevedore", quietly = TRUE)) {
         stop("The 'stevedore' package must be installed")
     }
-    session("gdiffDockerSession", libPaths=libPaths, Rpath=Rpath, image=image)
+    gdiffSession("gdiffDockerSession",
+                 libPaths=libPaths, Rpath=Rpath, image=image)
 }
 
 generateOutput.gdiffDockerSession <- function(session, codeFun,

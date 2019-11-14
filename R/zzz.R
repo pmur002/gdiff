@@ -6,5 +6,5 @@
             "gdiff.device"=pngDevice())
 }
 
-gdiffSession <- ".gdiffSession"
+gdiffSessionFile <- ".gdiffSession"
 
