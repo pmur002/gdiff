@@ -112,9 +112,9 @@ gdiffExamples.function <- function(fun, name=NULL, ...) {
     gdiffExamples(fun, fun, ...)
 }
 
-gdiffPackage <- function(pkg, ..., ncpu=1) {
+gdiffPackage <- function(pkg, ...) {
     codeFun <- packageCode(pkg)
-    gdiffCore(codeFun, ..., ncpu=ncpu)
+    gdiffCore(codeFun, ...)
 }
 
 ################################################################################
@@ -162,14 +162,14 @@ gdiffExamplesOutput.character <- function(fun, dir, name=fun, ...) {
 
 gdiffExamplesOutput.function <- function(fun, dir, name=NULL, ...) {
     name <- deparse(substitute(fun))
-    gdiffExamplesOutput(fun, dir, name, ...)
+    gdiffExamplesOutput(name, dir, ...)
 }
 
-gdiffPackageOutput <- function(pkg, dir, ..., ncpu=1) {
+gdiffPackageOutput <- function(pkg, dir, ...) {
     codeFun <- packageCode(pkg)
     gdiffCore(list(control=codeFun, test=NULL), controlDir=dir,
               testDir="", compare=FALSE,
-              ..., ncpu=ncpu)
+              ...)
     list.files(dir, full.names=TRUE)
 }
 

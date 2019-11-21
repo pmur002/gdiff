@@ -20,8 +20,10 @@ importFrom("grDevices",
            "postscript")
 
 importFrom("utils",
+           "capture.output",
            "example",
-           "install.packages")
+           "install.packages",
+           "sessionInfo")
 
 export("gdiff",
        "gdiffExamples",
