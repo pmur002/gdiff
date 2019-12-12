@@ -43,7 +43,7 @@ generateOutput.gdiffLocalSession <- function(session, codeFun,
 
     f <- function() {
         if (!require("gdiff")) {
-            install.packages("gdiff")
+            install.packages("gdiff", repos="http://cran.rstudio.com")
         }
         if (!is.null(session$libPaths)) {
             oldPaths <- .libPaths()
