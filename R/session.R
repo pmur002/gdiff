@@ -102,7 +102,16 @@ generateOutput.gdiffRemoteSession <- function(session, codeFun,
     }
     createDir(dir, clean)
     con <- ssh::ssh_connect(host)
-    ssh::scp_download(con, file.path(outputDir, "*"), dir, verbose=FALSE)
+    ## For R CMD check
+    outputFiles <- ""
+    con2 <- textConnection("outputFiles", "w")
+    ssh::ssh_exec_wait(con, paste0("ls -A ", outputDir), std_out=con2)
+    close(con2)
+    lapply(outputFiles,
+           function(x) {
+               ssh::scp_download(con, file.path(outputDir, x), dir,
+                                 verbose=FALSE)
+           })
     ssh::ssh_disconnect(con)
     stopCluster(cl)    
 }
@@ -141,7 +150,16 @@ generateOutput.gdiffClusterSession <- function(session, codeFun,
     }
     createDir(dir, clean)
     con <- ssh::ssh_connect(host)
-    ssh::scp_download(con, file.path(outputDir, "*"), dir, verbose=FALSE)
+    ## For R CMD check
+    outputFiles <- ""
+    con2 <- textConnection("outputFiles", "w")
+    ssh::ssh_exec_wait(con, paste0("ls -A ", outputDir), std_out=con2)
+    close(con2)
+    lapply(outputFiles,
+           function(x) {
+               ssh::scp_download(con, file.path(outputDir, x), dir,
+                                 verbose=FALSE)
+           })
     ssh::ssh_disconnect(con)
 }
 
