@@ -164,12 +164,14 @@ generateOutput.gdiffClusterSession <- function(session, codeFun,
 }
 
 ## Running Docker container
-dockerSession <- function(image, libPaths=NULL, Rpath="Rscript", ...) {
+dockerSession <- function(image, volumes=NULL, env=NULL,
+                          libPaths=NULL, Rpath="Rscript", ...) {
     if (!requireNamespace("stevedore", quietly = TRUE)) {
         stop("The 'stevedore' package must be installed")
     }
     gdiffSession("gdiffDockerSession",
-                 libPaths=libPaths, Rpath=Rpath, image=image)
+                 libPaths=libPaths, Rpath=Rpath,
+                 image=image, volumes=volumes)
 }
 
 generateOutput.gdiffDockerSession <- function(session, codeFun,
@@ -188,9 +190,12 @@ generateOutput.gdiffDockerSession <- function(session, codeFun,
                                          ## Keep container open
                                          "/bin/bash", tty=TRUE,
                                          ## Mount local output directory
-                                         volumes=paste0(normalizePath(dir),
-                                                        ":/work"),
-                                         working_dir="/work")
+                                         volumes=c(session$volumes,
+                                                   paste0(normalizePath(dir),
+                                                          ":/home/gdiff")),
+                                         ## Set environment variables
+                                         env=session$env,
+                                         working_dir="/home/gdiff")
     container$start()
     
     paths <- session$libPaths

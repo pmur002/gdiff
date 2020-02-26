@@ -24,7 +24,8 @@ localSession(libPaths=NULL,
 remoteSession(remote, ...)
 \method{remoteSession}{character}(remote, libPaths=NULL, Rpath="Rscript", ...)
 \method{remoteSession}{cluster}(remote, libPaths=NULL, user=NULL, ...)
-dockerSession(image, libPaths=NULL, Rpath="Rscript", ...)
+dockerSession(image, volumes=NULL, env=NULL, libPaths=NULL, Rpath="Rscript",
+              ...)
 
 gdiffSession(class, ...)
 gdiffGenerateOutput(codeFun, dir, device, clean, ncpu)
@@ -45,6 +46,15 @@ gdiffGenerateOutput(codeFun, dir, device, clean, ncpu)
   }
   \item{image}{
     The name of a Docker image.
+  }
+  \item{volumes}{
+    A character vector of volumes to mount on the container (of the
+    form \code{/path/on/host:/path/on/container/}).
+  }
+  \item{env}{
+    A character vector of environment variable settings for the
+    container
+    (of the form \code{VAR=value}).
   }
   \item{class}{
     A unique class for a new type of R session.
