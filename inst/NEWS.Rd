@@ -4,7 +4,10 @@
 
 \section{Changes in version 0.2-0}{
   \itemize{
-    \item Added \code{volumes} and \code{env} arguments to
+    \item Fix listing of output files for \code{remoteSession} and
+    \code{clusterSession}.
+    
+    \item Added \code{volumes} and \code{env} and \code{network} arguments to
     \code{dockerSession}.
   }
 }
