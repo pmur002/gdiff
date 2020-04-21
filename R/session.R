@@ -152,7 +152,7 @@ generateOutput.gdiffClusterSession <- function(session, codeFun,
     con <- ssh::ssh_connect(host)
     ## For R CMD check
     outputFiles <- ""
-    con2 <- textConnection("outputFiles", "w")
+    con2 <- textConnection("outputFiles", "w", local=TRUE)
     ssh::ssh_exec_wait(con, paste0("ls -A ", outputDir), std_out=con2)
     close(con2)
     lapply(outputFiles,
@@ -164,14 +164,14 @@ generateOutput.gdiffClusterSession <- function(session, codeFun,
 }
 
 ## Running Docker container
-dockerSession <- function(image, volumes=NULL, env=NULL,
+dockerSession <- function(image, volumes=NULL, env=NULL, network="bridge",
                           libPaths=NULL, Rpath="Rscript", ...) {
     if (!requireNamespace("stevedore", quietly = TRUE)) {
         stop("The 'stevedore' package must be installed")
     }
     gdiffSession("gdiffDockerSession",
                  libPaths=libPaths, Rpath=Rpath,
-                 image=image, volumes=volumes)
+                 image=image, volumes=volumes, network=network)
 }
 
 generateOutput.gdiffDockerSession <- function(session, codeFun,
@@ -185,7 +185,7 @@ generateOutput.gdiffDockerSession <- function(session, codeFun,
     createDir(dir, clean)
 
     docker <- stevedore::docker_client()
-    ## Create container 
+    ## Create container
     container <- docker$container$create(session$image,
                                          ## Keep container open
                                          "/bin/bash", tty=TRUE,
@@ -193,6 +193,8 @@ generateOutput.gdiffDockerSession <- function(session, codeFun,
                                          volumes=c(session$volumes,
                                                    paste0(normalizePath(dir),
                                                           ":/home/gdiff")),
+                                         ## Use network as host
+                                         network=session$network,
                                          ## Set environment variables
                                          env=session$env,
                                          working_dir="/home/gdiff")

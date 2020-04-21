@@ -114,6 +114,7 @@ if (nchar(rPath)) {
                        test=localSession(Rpath=rPath)))
 }
 
+f <- function() plot(1)
 ## Different host (different platform/OS)
 ## Hardware/VM version (other office machine)
 ## (NOTE that even this very simple example still requires install of
@@ -122,7 +123,6 @@ if (nchar(rPath)) {
 remoteHost <- Sys.getenv("GDIFF_REMOTE_HOST")
 remoteUser <- Sys.getenv("GDIFF_REMOTE_USER")
 if (nchar(remoteHost) && nchar(remoteUser)) {
-    f <- function() plot(1)
     gdiff(f,
           session=list(control=localSession(),
                        test=remoteSession(remoteHost, user=remoteUser)))
@@ -151,11 +151,11 @@ if (nchar(remoteHost) && nchar(remoteUser)) {
 ## Has to be run from 'sudo R' session (if user not in docker group)
 ## Generate image with R and gdiff installed
 f <- function() plot(1)
-## NOTE that PDF same but PNG different (PNG set up on container different?)
+## NOTE that PDF same but Cairo different (text diffs)
 gdiff(f,
-      device=list(pngDevice(), pdfDevice(), cairo_pdf_device()),
+      device=list(pngDevice(), pdfDevice(useDingbats=TRUE), cairo_pdf_device()),
       session=list(control=localSession(),
-                   test=dockerSession("pmur002/gdiff-test")))
+                   test=dockerSession("pmur002/gdiff-test", network="host")))
 
 ## Test function help examples
 gdiffExamples("plot")
@@ -193,9 +193,11 @@ if (nchar(remoteHost) && nchar(remoteUser)) {
 }
 ## dockersession
 gdiffPackage("gridBezier",
-             device=list(pngDevice(), pdfDevice(), cairo_pdf_device()),
+             device=list(pngDevice(), pdfDevice(useDingbats=TRUE),
+                         cairo_pdf_device()),
              session=list(control=localSession(),
-                          test=dockerSession("pmur002/gdiff-test")))
+                          test=dockerSession("pmur002/gdiff-test",
+                                             network="host")))
 
 
 ## Docker1 vs Docker2 ?
