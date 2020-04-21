@@ -104,7 +104,7 @@ generateOutput.gdiffRemoteSession <- function(session, codeFun,
     con <- ssh::ssh_connect(host)
     ## For R CMD check
     outputFiles <- ""
-    con2 <- textConnection("outputFiles", "w")
+    con2 <- textConnection("outputFiles", "w", local=TRUE)
     ssh::ssh_exec_wait(con, paste0("ls -A ", outputDir), std_out=con2)
     close(con2)
     lapply(outputFiles,
