@@ -167,6 +167,7 @@ if (nchar(rPath)) {
                   session=list(control=currentSession(),
                                test=localSession(Rpath=rPath)))
 }
+
 ## Test entire package
 ## currentsession
 gdiffPackage("gridBezier")
