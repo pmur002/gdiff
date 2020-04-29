@@ -42,9 +42,6 @@ generateOutput.gdiffLocalSession <- function(session, codeFun,
     on.exit(stopCluster(cl))
 
     f <- function() {
-        if (!require("gdiff")) {
-            install.packages("gdiff", repos="http://cran.rstudio.com")
-        }
         if (!is.null(session$libPaths)) {
             oldPaths <- .libPaths()
             .libPaths(c(session$libPaths, oldPaths))
@@ -79,9 +76,6 @@ generateOutput.gdiffRemoteSession <- function(session, codeFun,
                     session$clusterArgs))
 
     f <- function() {
-        if (!require("gdiff")) {
-            install.packages("gdiff")
-        }
         outputDir <- tempfile("gdiffOutput")
         dir.create(outputDir)
         if (!is.null(session$libPaths)) {
@@ -127,9 +121,6 @@ generateClusterOutput <- function(session, dir, clean, f) {
 generateOutput.gdiffClusterSession <- function(session, codeFun,
                                                dir, device, clean, ncpu) {
     f <- function() {
-        if (!require("gdiff")) {
-            install.packages("gdiff")
-        }
         outputDir <- tempfile("gdiffOutput")
         dir.create(outputDir)
         if (!is.null(session$libPaths)) {
@@ -202,9 +193,6 @@ generateOutput.gdiffDockerSession <- function(session, codeFun,
     
     paths <- session$libPaths
     f <- function() {
-        if (!require("gdiff")) {
-            install.packages("gdiff")
-        }
         if (!is.null(paths)) {
             oldPaths <- .libPaths()
             .libPaths(c(paths, oldPaths))
