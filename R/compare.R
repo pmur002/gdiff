@@ -67,6 +67,12 @@ diffFiles <- function(x) {
     x$diffFiles[different]
 }
 
+## Little hidden utility to ease my use on Linux
+## Call as gdiff:::eogDiffs(result)
+eogDiffs <- function(x) {
+    system(paste("eog", paste(diffFiles(x), collapse=" ")))
+}
+
 print.gdiffComparison <- function(x, ..., detail=TRUE) {
     result <- NULL
     same <- x$diffs == 0
