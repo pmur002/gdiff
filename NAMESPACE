@@ -34,6 +34,7 @@ export("gdiff",
        "gdiffPackageOutput",
 
        "gdiffCompare",
+       "diffFiles",
 
        "gdiffDevice",
        "cairo_pdf_device",

@@ -2,6 +2,11 @@
 \title{NEWS file for the gdiff package}
 \encoding{UTF-8}
 
+\section{Changes in version 0.2-2}{
+  \itemize{
+    \item New function \code{diffFiles}.
+  }
+}
 \section{Changes in version 0.2-0}{
   \itemize{
     \item Fix listing of output files for \code{remoteSession} and

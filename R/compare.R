@@ -61,6 +61,12 @@ performComparison <- function(controlDir, testDir, compareDir) {
     result
 }
 
+diffFiles <- function(x) {
+    same <- x$diffs == 0
+    different <- !same
+    x$diffFiles[different]
+}
+
 print.gdiffComparison <- function(x, ..., detail=TRUE) {
     result <- NULL
     same <- x$diffs == 0

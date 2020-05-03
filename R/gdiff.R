@@ -175,7 +175,8 @@ gdiffPackageOutput <- function(pkg, dir, ...) {
 
 ################################################################################
 ## Just compare
-gdiffCompare <- function(controlDir, testDir, compareDir, ...) {
+gdiffCompare <- function(controlDir="Control", testDir="Test",
+                         compareDir="Compare", ...) {
     ## controlDir and testDir can be vectors
     gdiffCore(codeFun=NULL, controlDir, testDir, compareDir, ...)
 }
