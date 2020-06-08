@@ -5,6 +5,10 @@
 \section{Changes in version 0.2-2}{
   \itemize{
     \item New function \code{diffFiles}.
+
+    \item Attempt to handle broken output files (files that \pkg{magick}
+    cannot read or convert or compare) more elegantly, including
+    reporting them in the comparison result.
   }
 }
 \section{Changes in version 0.2-0}{

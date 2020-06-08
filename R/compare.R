@@ -6,7 +6,24 @@ compare <- function(controlFile, testFile, diffFile) {
     testPNG <- magick::image_convert(test, "png")
     diffPNG <- magick::image_compare(testPNG, controlPNG, metric="AE")
     magick::image_write(diffPNG, diffFile)
-    attr(diffPNG, "distortion")
+    distortion <- attr(diffPNG, "distortion")
+    ## Check for errors
+    errors <- NULL
+    if (!length(control)) 
+        errors <- c(errors, "readControl")
+    if (!length(test))
+        errors <- c(errors, "readTest")
+    if (!length(controlPNG) && !("readControl" %in% errors))
+        errors <- c(errors, "convertControl")
+    if (!length(testPNG) && !("readTest" %in% errors))
+        errors <- c(errors, "convertTest")
+    if (!length(distortion) && is.null(errors))
+        errors <- "compare"
+    ## Return size of difference (or error(s))
+    if (is.null(errors))
+        distortion
+    else
+        errors
 }
 
 performComparison <- function(controlDir, testDir, compareDir) {
@@ -30,9 +47,17 @@ performComparison <- function(controlDir, testDir, compareDir) {
     ## parallelise this step
     if (length(compareFiles$control) &&
         length(compareFiles$test)) {
-        diffs <- mapply(compare,
-                        compareFiles$control, compareFiles$test, diffFiles,
-                        SIMPLIFY=TRUE)
+        results <- mapply(compare,
+                          compareFiles$control, compareFiles$test, diffFiles,
+                          SIMPLIFY=FALSE)
+        diffs <- sapply(results, function(x) if (is.character(x)) NA else x)
+        errors <- sapply(results,
+                         function(x) {
+                             if (is.character(x))
+                                 paste(x, collapse=", ")
+                             else
+                                 NA
+                         })
     } else {
         diffs <- numeric()
     }
@@ -53,6 +78,7 @@ performComparison <- function(controlDir, testDir, compareDir) {
                    testFiles=testFiles,
                    diffFiles=diffFiles,
                    diffs=diffs,
+                   errors=errors,
                    controlInTest=controlInTest,
                    testInControl=testInControl,
                    controlInfo=controlInfo,
@@ -75,8 +101,9 @@ eogDiffs <- function(x) {
 
 print.gdiffComparison <- function(x, ..., detail=TRUE) {
     result <- NULL
-    same <- x$diffs == 0
-    different <- !same
+    broken <- is.na(x$diffs)
+    same <- !broken & x$diffs == 0
+    different <- !broken & !same
     compared <- sum(x$controlInTest)
     if (any(same)) {
         header <- paste0("Identical files [", sum(same), "/", compared, "]")
@@ -103,6 +130,46 @@ print.gdiffComparison <- function(x, ..., detail=TRUE) {
                          x$testFiles[x$testInControl][different],
                          " (", x$diffFiles[different], " [",
                          x$diffs[different], "])"))
+        } else {
+            result <- c(result, header)
+        }
+    }
+    if (any(broken)) {
+        header <- paste0("Comparisons that are broken [", sum(broken),
+                         "/", compared, "]")
+        if (detail) {
+           result <- c(result, "", header, underline())
+           brokenRead <- broken & grepl("readControl", x$errors)
+           if (any(brokenRead))
+               result <-
+                   c(result,
+                     paste0(format(x$controlFiles[x$controlInTest][brokenRead]),
+                            " could not be read"))
+           brokenRead <- broken & grepl("readTest", x$errors)
+           if (any(brokenRead))
+               result <-
+                   c(result,
+                     paste0(format(x$testFiles[x$testInControl][brokenRead]),
+                            " could not be read"))
+           brokenConvert <- broken & grepl("convertControl", x$errors)
+           if (any(brokenConvert))
+               result <-
+                   c(result,
+                     paste0(format(x$controlFiles[x$controlInTest][brokenConvert]),
+                            " could not be converted"))
+           brokenConvert <- broken & grepl("convertTest", x$errors)
+           if (any(brokenConvert))
+               result <-
+                   c(result,
+                     paste0(format(x$testFiles[x$testInControl][brokenConvert]),
+                            " could not be converted"))
+           brokenCompare <- broken & grepl("compare", x$errors)
+           if (any(brokenCompare))
+               result <-
+                   c(result,
+                     paste0(format(x$controlFiles[x$controlInTest][brokenCompare]),
+                            " could not be compared with ",
+                            format(x$testFiles[x$testInControl][brokenConvert])))
         } else {
             result <- c(result, header)
         }
