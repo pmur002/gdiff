@@ -1,29 +1,24 @@
 
 compare <- function(controlFile, testFile, diffFile) {
     control <- magick::image_read(controlFile)
+    if (!length(control)) 
+        return("readControl")
     test <-  magick::image_read(testFile)
+    if (!length(test))
+        return("readTest")
     controlPNG <- magick::image_convert(control, "png")
+    if (!length(controlPNG))
+        return("convertControl")
     testPNG <- magick::image_convert(test, "png")
+    if (!length(testPNG))
+        return("convertTest")
     diffPNG <- magick::image_compare(testPNG, controlPNG, metric="AE")
     magick::image_write(diffPNG, diffFile)
     distortion <- attr(diffPNG, "distortion")
-    ## Check for errors
-    errors <- NULL
-    if (!length(control)) 
-        errors <- c(errors, "readControl")
-    if (!length(test))
-        errors <- c(errors, "readTest")
-    if (!length(controlPNG) && !("readControl" %in% errors))
-        errors <- c(errors, "convertControl")
-    if (!length(testPNG) && !("readTest" %in% errors))
-        errors <- c(errors, "convertTest")
-    if (!length(distortion) && is.null(errors))
-        errors <- "compare"
-    ## Return size of difference (or error(s))
-    if (is.null(errors))
-        distortion
-    else
-        errors
+    if (!length(distortion))
+        return("compare")
+    ## Return size of difference 
+    distortion
 }
 
 performComparison <- function(controlDir, testDir, compareDir) {
