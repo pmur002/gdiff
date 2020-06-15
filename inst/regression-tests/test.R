@@ -127,7 +127,8 @@ if (nchar(remoteHost) && nchar(remoteUser)) {
           session=list(control=localSession(),
                        test=remoteSession(remoteHost, user=remoteUser)))
 } else {
-    stop("Remote host and/or user not defined")
+    warning("remoteSession() tests NOT run
+(remote host and/or user not defined)")
 }
 
 ## Different host (different platform/OS)
@@ -144,7 +145,8 @@ if (nchar(remoteHost) && nchar(remoteUser)) {
                        test=remoteSession(cl, user=remoteUser)))
     stopCluster(cl)
 } else {
-    stop("Remote host and/or user not defined")
+    warning("remoteSession() tests NOT run
+(remote host and/or user not defined)")
 }
 
 ## Docker version
@@ -189,7 +191,8 @@ if (nchar(remoteHost) && nchar(remoteUser)) {
                               test=remoteSession(cl, user=remoteUser)))
     stopCluster(cl)
 } else {
-    stop("Remote host and/or user not defined")
+    warning("remoteSession() tests NOT run
+(remote host and/or user not defined)")
 }
 ## dockersession
 gdiffPackage("gridBezier",
