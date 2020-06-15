@@ -82,6 +82,7 @@ performComparison <- function(controlDir, testDir, compareDir) {
                          })
     } else {
         diffs <- numeric()
+        errors <- character()
     }
     ## Load session info from Control and Test directories
     getInfo <- function(dir, files) {
