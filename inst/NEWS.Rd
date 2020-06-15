@@ -9,6 +9,9 @@
     \item Attempt to handle broken output files (files that \pkg{magick}
     cannot read or convert or compare) more elegantly, including
     reporting them in the comparison result.
+
+    \item If get an error reading PDF file with \pkg{magick}, try
+    \command{pdftoppm} (if it exists).
   }
 }
 \section{Changes in version 0.2-0}{

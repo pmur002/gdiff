@@ -1,17 +1,44 @@
 
+generatePNG <- function(infile, type) {
+    pdftoppm <- getOption("gdiff.pdftoppm")
+    img <- magick::image_read(infile)
+    if (length(img)) {
+        png <- magick::image_convert(img, "png")
+        if (length(png)) {
+            return(png)
+        } else {
+            return(paste0("convert", type))
+        }
+    } else if (grepl("[.]pdf$", infile)) {
+        ## Try 'pdftoppm'
+        if (nchar(pdftoppm)) {
+            outfile <- tempfile(fileext="png")
+            result <- system2("pdftoppm",
+                              c("--png", infile, " > ", outfile))
+            if (result) { ## error
+                return(paste0("convert", type))
+            } else {
+                png <- magick::image_read(outfile)
+                if (length(png)) {
+                    return(png)
+                } else {
+                    return(paste0("read", type))
+                }
+            }
+        } else {
+            return(paste0("read", type))
+        }
+    }
+    "generatePNG"
+}
+
 compare <- function(controlFile, testFile, diffFile) {
-    control <- magick::image_read(controlFile)
-    if (!length(control)) 
-        return("readControl")
-    test <-  magick::image_read(testFile)
-    if (!length(test))
-        return("readTest")
-    controlPNG <- magick::image_convert(control, "png")
-    if (!length(controlPNG))
-        return("convertControl")
-    testPNG <- magick::image_convert(test, "png")
-    if (!length(testPNG))
-        return("convertTest")
+    controlPNG <- generatePNG(controlFile, "Control")
+    if (is.character(controlPNG)) ## error
+        return(controlPNG)
+    testPNG <- generatePNG(testFile, "Test")
+    if (is.character(testPNG)) ## error
+        return(testPNG)
     diffPNG <- magick::image_compare(testPNG, controlPNG, metric="AE")
     magick::image_write(diffPNG, diffFile)
     distortion <- attr(diffPNG, "distortion")
