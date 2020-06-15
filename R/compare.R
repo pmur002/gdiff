@@ -14,7 +14,7 @@ generatePNG <- function(infile, type) {
         if (nchar(pdftoppm)) {
             outfile <- tempfile(fileext="png")
             result <- system2("pdftoppm",
-                              c("--png", infile, " > ", outfile))
+                              c("-png", infile, ">", outfile))
             if (result) { ## error
                 return(paste0("convert", type))
             } else {
