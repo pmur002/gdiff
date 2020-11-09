@@ -12,6 +12,8 @@
 
     \item If get an error reading PDF file with \pkg{magick}, try
     \command{pdftoppm} (if it exists).
+
+    \item "Remote" sessions all now load \pkg{gdiff} package.
   }
 }
 \section{Changes in version 0.2-0}{
