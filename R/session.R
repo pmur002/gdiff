@@ -41,12 +41,16 @@ generateOutput.gdiffLocalSession <- function(session, codeFun,
                     session$clusterArgs))
     on.exit(stopCluster(cl))
 
+    oldPaths <- .libPaths()
+    if (!is.null(session$libPaths)) {
+        newPaths <- c(session$libPaths, oldPaths)
+    } else {
+        newPaths <- oldPaths
+    }
+    
     ## Appears to need to be a separate call (WTF?)
     f <- function() {
-        if (!is.null(session$libPaths)) {
-            oldPaths <- .libPaths()
-            .libPaths(c(session$libPaths, oldPaths))
-        }
+        .libPaths(newPaths)
         require(gdiff)
     }
     
