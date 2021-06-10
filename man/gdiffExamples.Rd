@@ -40,10 +40,12 @@ gdiffExamples(fun, ...)
   \code{\link{gdiffPackage}}.
 }
 \examples{
+\donttest{
 gdiffExamples(plot,
               controlDir=file.path(tempdir(), "Control"),
               testDir=file.path(tempdir(), "Test"),
               compareDir=file.path(tempdir(), "Compare"))
+}
 }
 \keyword{ dplot }
 \concept{ visual testing }

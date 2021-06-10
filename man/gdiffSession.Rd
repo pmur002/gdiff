@@ -88,10 +88,12 @@ gdiffGenerateOutput(codeFun, dir, device, clean, ncpu)
 }
 \examples{
 f <- function() plot(1)
+\donttest{
 gdiff(f, session=currentSession(),
       controlDir=file.path(tempdir(), "Control"),
       testDir=file.path(tempdir(), "Test"),
       compareDir=file.path(tempdir(), "Compare"))
+}
 }
 \keyword{ dplot }
 \concept{ visual testing }

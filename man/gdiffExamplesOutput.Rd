@@ -40,7 +40,9 @@ gdiffExamplesOutput(fun, dir, ...)
   \code{\link{gdiffPackageOutput}}.
 }
 \examples{
+\donttest{
 gdiffExamplesOutput(plot, dir=file.path(tempdir(), "Control"))
+}
 }
 \keyword{ dplot }
 \concept{ visual testing }

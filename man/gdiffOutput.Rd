@@ -60,7 +60,9 @@ gdiffOutput(x, dir, ...)
 }
 \examples{
 f <- function() plot(1)
+\donttest{
 gdiffOutput(f, dir=file.path(tempdir(), "Control"))
+}
 }
 \keyword{ dplot }
 \concept{ visual testing }

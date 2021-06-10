@@ -54,10 +54,12 @@ gdiffDevice(name, suffix=name, open,
 }
 \examples{
 f <- function() plot(1)
+\donttest{
 gdiff(f, device=pdfDevice(),
       controlDir=file.path(tempdir(), "Control"),
       testDir=file.path(tempdir(), "Test"),
       compareDir=file.path(tempdir(), "Compare"))
+}
 }
 \keyword{ dplot }
 \concept{ visual testing }

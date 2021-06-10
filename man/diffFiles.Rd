@@ -29,12 +29,14 @@ diffFiles(x)
 \examples{
 f1 <- function() plot(1)
 f2 <- function() plot(2)
+\donttest{
 result <- gdiff(list(control=f1, test=f2), name="f",
                 controlDir=file.path(tempdir(), "Control"),
                 testDir=file.path(tempdir(), "Test"),
                 compareDir=file.path(tempdir(), "Compare"))
 result
 diffFiles(result)
+}
 }
 \keyword{ dplot }
 \concept{ visual testing }
