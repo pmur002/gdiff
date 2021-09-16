@@ -1,4 +1,7 @@
 
+importFrom("tools",
+           "Rdiff")
+
 importFrom("grDevices",
            "dev.off")
 

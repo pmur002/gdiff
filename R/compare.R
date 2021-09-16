@@ -1,6 +1,7 @@
 
 generatePNG <- function(infile, type) {
     pdftoppm <- getOption("gdiff.pdftoppm")
+    pdfFile <- grepl("[.]pdf$", infile)
     img <- magick::image_read(infile)
     if (length(img)) {
         png <- magick::image_convert(img, "png")
@@ -9,7 +10,7 @@ generatePNG <- function(infile, type) {
         } else {
             return(paste0("convert", type))
         }
-    } else if (grepl("[.]pdf$", infile)) {
+    } else if (pdfFile) {
         ## Try 'pdftoppm'
         if (nchar(pdftoppm)) {
             outfile <- tempfile(fileext="png")
@@ -33,6 +34,11 @@ generatePNG <- function(infile, type) {
 }
 
 compare <- function(controlFile, testFile, diffFile) {
+    pdfFile <- grepl("[.]pdf$", controlFile)
+    ## Shortcut: Check PDF files for "identical" PDF code 
+    if (pdfFile &&
+        Rdiff(controlFile, testFile, Log=TRUE)$status == 0)
+        return(0)
     controlPNG <- generatePNG(controlFile, "Control")
     if (is.character(controlPNG)) ## error
         return(controlPNG)
