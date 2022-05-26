@@ -2,6 +2,13 @@
 \title{NEWS file for the gdiff package}
 \encoding{UTF-8}
 
+\section{Changes in version 0.2-3}{
+  \itemize{
+    \item PDF files are first checked with \code{tools::Rdiff}.
+    If they are identical then no conversion to PNG (for comparison) is
+    necessary.
+  }
+}
 \section{Changes in version 0.2-2}{
   \itemize{
     \item New function \code{diffFiles}.
@@ -14,10 +21,6 @@
     \command{pdftoppm} (if it exists).
 
     \item "Remote" sessions all now load \pkg{gdiff} package.
-
-    \item PDF files are first checked with \code{tools::Rdiff}.
-    If they are identical then no conversion to PNG (for comparison) is
-    necessary.
   }
 }
 \section{Changes in version 0.2-0}{
