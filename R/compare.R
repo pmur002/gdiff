@@ -36,8 +36,7 @@ generatePNG <- function(infile, type) {
 compare <- function(controlFile, testFile, diffFile) {
     pdfFile <- grepl("[.]pdf$", controlFile)
     ## Shortcut: Check PDF files for "identical" PDF code 
-    if (pdfFile &&
-        Rdiff(controlFile, testFile, Log=TRUE)$status == 0)
+    if (pdfFile && samePDF(controlFile, testFile))
         return(0)
     controlPNG <- generatePNG(controlFile, "Control")
     if (is.character(controlPNG)) ## error

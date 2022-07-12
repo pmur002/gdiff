@@ -45,37 +45,42 @@ result <- gdiff(f1, device=list(control=list(pngDevice(), pdfDevice()),
                                           cairo_pdf_device(suffix=".pdf"))))
 print(result, detail=FALSE)
 
-## Different libPaths (different package versions)
-oldPkgDir <- file.path(tempdir(), "oldPackages")
-dir.create(oldPkgDir)
-newPkgDir <- file.path(tempdir(), "newPackages")
-dir.create(newPkgDir)
-## To avoid "cannot open file 'startup.Rs'" error
-## https://github.com/r-lib/testthat/issues/144
-Sys.setenv("R_TESTS" = "")
-install.packages("grImport_0.9-1.tar.gz", repos=NULL, lib=oldPkgDir)
-install.packages("grImport_0.9-2.tar.gz", repos=NULL, lib=newPkgDir)
-f <- function() {
-    ## grImport_0.9-2 added ability to import 'skewed' pictures
-    library(grImport)
-    PostScriptTrace("transform.ps", "transform.xml")
-    img <- readPicture("transform.xml")
-    grid.picture(img)
-    detach("package:grImport")
-}
-gdiff(f, session=list(control=currentSession(libPaths=oldPkgDir),
-                      test=currentSession(libPaths=newPkgDir)))
+## Can no longer run these tests because ghostscript > 9.5 has -dSAFER
+## by default so these versions of 'grImport', which do not add -DNOSAFER,
+## fail
+notrun <- function() {
+    ## Different libPaths (different package versions)
+    oldPkgDir <- file.path(tempdir(), "oldPackages")
+    dir.create(oldPkgDir)
+    newPkgDir <- file.path(tempdir(), "newPackages")
+    dir.create(newPkgDir)
+    ## To avoid "cannot open file 'startup.Rs'" error
+    ## https://github.com/r-lib/testthat/issues/144
+    Sys.setenv("R_TESTS" = "")
+    install.packages("grImport_0.9-1.tar.gz", repos=NULL, lib=oldPkgDir)
+    install.packages("grImport_0.9-2.tar.gz", repos=NULL, lib=newPkgDir)
+    f <- function() {
+        ## grImport_0.9-2 added ability to import 'skewed' pictures
+        library(grImport)
+        PostScriptTrace("transform.ps", "transform.xml")
+        img <- readPicture("transform.xml")
+        grid.picture(img)
+        detach("package:grImport")
+    }
+    gdiff(f, session=list(control=currentSession(libPaths=oldPkgDir),
+                          test=currentSession(libPaths=newPkgDir)))
 
-## Run normal R, but in different session (so no need to detach packages)
-f <- function() {
-    ## grImport_0.9-2 added ability to import 'skewed' pictures
-    library(grImport)
-    PostScriptTrace("transform.ps", "transform.xml")
-    img <- readPicture("transform.xml")
-    grid.picture(img)
+    ## Run normal R, but in different session (so no need to detach packages)
+    f <- function() {
+        ## grImport_0.9-2 added ability to import 'skewed' pictures
+        library(grImport)
+        PostScriptTrace("transform.ps", "transform.xml")
+        img <- readPicture("transform.xml")
+        grid.picture(img)
+    }
+    gdiff(f, session=list(control=localSession(libPaths=oldPkgDir),
+                          test=localSession(libPaths=newPkgDir)))
 }
-gdiff(f, session=list(control=localSession(libPaths=oldPkgDir),
-                      test=localSession(libPaths=newPkgDir)))
 
 ## Pre-prepared output (do not clean controlDir)
 ## metaplot output vs 'metaplot' output
@@ -149,15 +154,20 @@ if (nchar(remoteHost) && nchar(remoteUser)) {
 (remote host and/or user not defined)")
 }
 
-## Docker version
-## Has to be run from 'sudo R' session (if user not in docker group)
-## Generate image with R and gdiff installed
-f <- function() plot(1)
-## NOTE that PDF same but Cairo different (text diffs)
-gdiff(f,
-      device=list(pngDevice(), pdfDevice(useDingbats=TRUE), cairo_pdf_device()),
-      session=list(control=localSession(),
-                   test=dockerSession("pmur002/gdiff-test", network="host")))
+## No longer run by default because it needs Docker set up
+notrun <- function() {
+    ## Docker version
+    ## Has to be run from 'sudo R' session (if user not in docker group)
+    ## Generate image with R and gdiff installed
+    f <- function() plot(1)
+    ## NOTE that PDF same but Cairo different (text diffs)
+    gdiff(f,
+          device=list(pngDevice(), pdfDevice(useDingbats=TRUE),
+                      cairo_pdf_device()),
+          session=list(control=localSession(),
+                       test=dockerSession("pmur002/gdiff-test",
+                                          network="host")))
+}
 
 ## Test function help examples
 gdiffExamples("plot")
@@ -194,13 +204,15 @@ if (nchar(remoteHost) && nchar(remoteUser)) {
     warning("remoteSession() tests NOT run
 (remote host and/or user not defined)")
 }
-## dockersession
-gdiffPackage("gridBezier",
-             device=list(pngDevice(), pdfDevice(useDingbats=TRUE),
-                         cairo_pdf_device()),
-             session=list(control=localSession(),
-                          test=dockerSession("pmur002/gdiff-test",
-                                             network="host")))
-
+## No longer run by default because it needs Docker set up
+notrun <- function() {
+    ## dockersession
+    gdiffPackage("gridBezier",
+                 device=list(pngDevice(), pdfDevice(useDingbats=TRUE),
+                             cairo_pdf_device()),
+                 session=list(control=localSession(),
+                              test=dockerSession("pmur002/gdiff-test",
+                                                 network="host")))
+}
 
 ## Docker1 vs Docker2 ?

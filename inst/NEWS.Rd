@@ -2,6 +2,11 @@
 \title{NEWS file for the gdiff package}
 \encoding{UTF-8}
 
+\section{Changes in version 0.2-4}{
+  \itemize{
+    \item Use new function \code{samePDF()} instead of \code{tools::Rdiff}.
+  }
+}
 \section{Changes in version 0.2-3}{
   \itemize{
     \item PDF files are first checked with \code{tools::Rdiff}.

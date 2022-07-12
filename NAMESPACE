@@ -38,6 +38,7 @@ export("gdiff",
 
        "gdiffCompare",
        "diffFiles",
+       "samePDF",
 
        "gdiffDevice",
        "cairo_pdf_device",
