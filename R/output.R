@@ -1,6 +1,6 @@
 
 ## Functions for generating graphical output
-generateOutput <- function(session, code, dir, device, clean, ncpu) {
+generateOutput <- function(session, codeFun, dir, device, clean, ncpu) {
     UseMethod("generateOutput")
 }
 

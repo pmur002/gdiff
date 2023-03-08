@@ -2,6 +2,12 @@
 \title{NEWS file for the gdiff package}
 \encoding{UTF-8}
 
+\section{Changes in version 0.2-5}{
+  \itemize{
+    \item Fixes for \code{tools::checkS3methods()}.
+  }
+}
+
 \section{Changes in version 0.2-4}{
   \itemize{
     \item Use new function \code{samePDF()} instead of \code{tools::Rdiff}.
